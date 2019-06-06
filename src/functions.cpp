@@ -76,13 +76,9 @@ bool checkMotorGearset(Motor m1, Motor m2, Motor m3, Motor m4)
   //Otherwise, the motor is either defined as "blank" or internal gearing is broken
   int gears[4];
   gears[0] = m1.get_gearing();
-  // std::cout << gears[0] << std::endl;
   gears[1] = m2.get_gearing();
-  // std::cout << gears[1] << std::endl;
   gears[2] = m3.get_gearing();
-  // std::cout << gears[2] << std::endl;
   gears[3] = m4.get_gearing();
-  // std::cout << gears[3] << std::endl;
 
   //New array to keep track of motors with actual gear settings
   int goodFlag = 0;
@@ -91,37 +87,25 @@ bool checkMotorGearset(Motor m1, Motor m2, Motor m3, Motor m4)
   //Loop to add "good" gears to the "goodGears" array  if they are good gears (get_gearing returns a 0, 1, or 2)
   for(int i = 0; i <= 3; i++)
   {
-    // std::cout << gears[i] << std::endl;
     if(gears[i] <= 2)
     {
-      // std::cout << gears[i] + 1 << std::endl;
       goodGears[goodFlag] = gears[i];
-      // std::cout << goodGears[goodFlag] << std::endl;
       goodFlag++;
-      // std::cout << goodFlag << std::endl;
-    }
-    else
-    {
-
     }
   }
 
-    std::cout << goodGears[0] << std::endl;
-      std::cout << goodGears[1] << std::endl;
-        std::cout << goodGears[2] << std::endl;
-          std::cout << goodGears[3] << std::endl;
-  std::cout << goodFlag << std::endl;
-  //Check good gears for equality. If any are not the same, return false
-  for(int i = 0; i <= goodFlag-1; i--)
+  if(goodFlag == 1)
   {
-    std::cout << goodGears[i] << std::endl;
-      std::cout << goodGears[i+1] << std::endl;
-    if(goodGears[i] != goodGears[i+1])
+    return true;
+  }
+  else
+  {
+    for(int i = 0; i < goodFlag - 1; i++)
     {
-      // std::cout << goodGears[i] << std::endl;
-
-      // std::cout << goodGears[i-1] << std::endl;
-      return false;
+      if(goodGears[0] != goodGears[i+1])
+      {
+        return false;
+      }
     }
   }
 
