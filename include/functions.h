@@ -1,5 +1,6 @@
 #include "main.h"
 #include "hardware.h"
+#include "logging.hpp"
 
 using namespace pros;
 

@@ -1,5 +1,4 @@
 #include "main.h"
-#include "hardware.h"
 #include "functions.h"
 #include "api.h"
 #include "pros/apix.h"
