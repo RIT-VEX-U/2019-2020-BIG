@@ -14,8 +14,10 @@ using namespace pros;
     static Motor driveFrontLeft;
     static Motor driveFrontRight;
 
-    static Motor liftRight;
-    static Motor liftLeft;
+    static Motor liftR1;
+    static Motor liftL1;
+    static Motor liftR2;
+    static Motor liftL2;
 
     static Motor claw;
 
