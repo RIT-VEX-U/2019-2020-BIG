@@ -1,4 +1,5 @@
 #include "main.h"
+#include "hardware.h"
 
 void on_center_button() {
 	static bool pressed = false;
@@ -21,6 +22,9 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+
+	Hardware::right_drive.setReversed(true);
+	Hardware::left_drive.setReversed(false);
 }
 
 /**

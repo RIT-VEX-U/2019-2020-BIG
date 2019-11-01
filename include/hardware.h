@@ -1,28 +1,26 @@
 #ifndef HARDWARE
 #define HARDWARE
 #include "api.h"
+#include "subsystems/tank_drive.hpp"
 #include "pros/apix.h"
+#include "okapi/impl/device/motor/motorGroup.hpp"
 
 using namespace pros;
 
-  class hw
-  {
-  public:
+namespace Hardware
+{
+  extern okapi::MotorGroup left_drive;
+  extern okapi::MotorGroup right_drive;
 
-    static Motor driveBackLeft;
-    static Motor driveBackRight;
-    static Motor driveFrontLeft;
-    static Motor driveFrontRight;
+  extern TankDrive drive_system;
 
-    static Motor liftRight;
-    static Motor liftLeft;
+  extern Motor liftRight;
+  extern Motor liftLeft;
+  extern Motor claw;
 
-    static Motor claw;
+  // static Vision camera;
 
-    // static Vision camera;
-
-    static Controller master;
-
-    static Motor blank;
-  };
+  extern Controller master;
+  extern Motor blank;
+};
 #endif
