@@ -24,6 +24,8 @@ void opcontrol() {
 
 		Hardware::drive_system.drive(left, right);
 
+		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_A), Hardware::master.get_digital(DIGITAL_B));
+
 		pros::delay(20);
 	}
 }
