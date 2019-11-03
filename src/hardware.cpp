@@ -2,10 +2,10 @@
 
 Motor Hardware::blank(30,false);
 
-okapi::MotorGroup Hardware::left_drive = {1, 2};
-okapi::MotorGroup Hardware::right_drive = {3, 4};
+okapi::MotorGroup Hardware::left_drive = {1};
+okapi::MotorGroup Hardware::right_drive = {3};
 
-TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, okapi::AbstractMotor::gearset::green);
+TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, okapi::AbstractMotor::gearset::green, 4.0);
 
 Motor Hardware::left_intake(8);
 Motor Hardware::right_intake(9);
