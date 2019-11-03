@@ -12,10 +12,17 @@ okapi::MotorGroup Hardware::right_drive = {3, 4};
 //The
 TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, okapi::AbstractMotor::gearset::green);
 
-//All the motors controlling the lift
 okapi::MotorGroup Hardware::lift_motors = {5, -6, 7, -8};
 
 rd4Bar Hardware::lift(Hardware::lift_motors, 20);
+
+Motor Hardware::left_intake(8);
+Motor Hardware::right_intake(9);
+
+HorizIntake Hardware::horiz_intake(Hardware::left_intake, Hardware::right_intake);
+
+Motor Hardware::liftRight(5,0);
+Motor Hardware::liftLeft(6,0);
 
 Motor Hardware::claw(7,0);
 

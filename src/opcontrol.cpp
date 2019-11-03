@@ -34,9 +34,12 @@ void opcontrol() {
 			Hardware::lift.stop();
 		}
 
+		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_A), Hardware::master.get_digital(DIGITAL_B));
+
 		//Log all motors
 		Hardware::drive_system.logDrive();
 		Hardware::lift.logLift();
+
 
 		pros::delay(20);
 	}
