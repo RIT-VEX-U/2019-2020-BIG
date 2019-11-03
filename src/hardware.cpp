@@ -6,12 +6,16 @@ using namespace pros;
 
 Motor Hardware::blank(30,false);
 
+//All the motors controlling the left & right sides of the drive train
+okapi::MotorGroup Hardware::left_drive = {1, 2};
+okapi::MotorGroup Hardware::right_drive = {3, 4};
+//The
 TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, okapi::AbstractMotor::gearset::green);
 
-Motor Hardware::liftR1(5,0);
-Motor Hardware::liftL1(6,0);
-Motor Hardware::liftR2(7,0);
-Motor Hardware::liftL2(8,0);
+//All the motors controlling the lift
+okapi::MotorGroup Hardware::lift_motors = {5, -6, 7, -8};
+
+rd4Bar Hardware::lift(Hardware::lift_motors, 20);
 
 Motor Hardware::claw(7,0);
 

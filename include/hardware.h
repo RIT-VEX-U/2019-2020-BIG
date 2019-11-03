@@ -2,6 +2,7 @@
 #define HARDWARE
 #include "api.h"
 #include "subsystems/tank_drive.hpp"
+#include "subsystems/rd4Bar.hpp"
 #include "pros/apix.h"
 #include "okapi/impl/device/motor/motorGroup.hpp"
 
@@ -14,10 +15,10 @@ namespace Hardware
 
   extern TankDrive drive_system;
 
-  extern Motor liftR1;
-  extern Motor liftL1;
-  extern Motor liftR2;
-  extern Motor liftL2;
+  extern okapi::MotorGroup lift_motors;
+
+  extern rd4Bar lift;
+
   extern Motor claw;
 
   // static Vision camera;

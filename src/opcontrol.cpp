@@ -1,4 +1,5 @@
 #include "main.h"
+#include "logging.hpp"
 #include "hardware.h"
 
 /**
@@ -15,14 +16,27 @@
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-
+	logging::clearLogFile();
 	while (true) {
 
-		int left = master.get_analog(ANALOG_LEFT_Y);
-		int right = master.get_analog(ANALOG_RIGHT_Y);
+		int left = Hardware::master.get_analog(ANALOG_LEFT_Y);
+		int right = Hardware::master.get_analog(ANALOG_RIGHT_Y);
 
 		Hardware::drive_system.drive(left, right);
+
+		if(Hardware::master.get_digital(DIGITAL_R2)){
+			Hardware::lift.raise(127);
+		}
+		else if(Hardware::master.get_digital(DIGITAL_R1)){
+			Hardware::lift.lower(127);
+		}
+		else if(Hardware::lift.isMoving()){
+			Hardware::lift.stop();
+		}
+
+		//Log all motors
+		Hardware::drive_system.logDrive();
+		Hardware::lift.logLift();
 
 		pros::delay(20);
 	}
