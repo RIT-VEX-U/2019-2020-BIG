@@ -4,6 +4,7 @@
 #include "okapi/impl/device/motor/motorGroup.hpp"
 #include "okapi/impl/util/timer.hpp"
 #include <ctime>
+#include "logging.hpp"
 
 class TankDrive
 {
