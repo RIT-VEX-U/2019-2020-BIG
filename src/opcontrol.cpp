@@ -25,10 +25,10 @@ void opcontrol() {
 		Hardware::drive_system.drive(left, right);
 
 		if(Hardware::master.get_digital(DIGITAL_R2)){
-			Hardware::lift.raise(127);
+			Hardware::lift.raise(200);
 		}
 		else if(Hardware::master.get_digital(DIGITAL_R1)){
-			Hardware::lift.lower(127);
+			Hardware::lift.lower(200);
 		}
 		else if(Hardware::lift.isMoving()){
 			Hardware::lift.stop();
