@@ -20,11 +20,19 @@ void opcontrol() {
 	//pros::lcd::set_text(1, "Hi, Shane!");
 	//pros::lcd::print(2, "Before if statement");
 	while (true) {
+		if(Hardware::master.get_digital_new_press(DIGITAL_X))
+		{
+			//Hardware::left_drive.moveAbsolute(5, 100);
+			while(Hardware::drive_system.drive_forward(12, .5))
+			{
+				pros::delay(20);
+			}
+		}
 
 		int left = Hardware::master.get_analog(ANALOG_LEFT_Y);
 		int right = Hardware::master.get_analog(ANALOG_RIGHT_Y);
 
-		Hardware::drive_system.drive(left, right);
+		//Hardware::drive_system.drive(left, right);
 
 
 		//pros::lcd::print(2, "Before if statement");
@@ -45,7 +53,7 @@ void opcontrol() {
 		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_A), Hardware::master.get_digital(DIGITAL_B));
 
 		//Log all motors
-		Hardware::drive_system.logDrive();
+		//Hardware::drive_system.logDrive();
 		Hardware::lift.logLift();
 
 

@@ -25,11 +25,10 @@ using namespace pros;
 
 Motor Hardware::blank(30,false);
 
-//All the motors controlling the left & right sides of the drive train
-okapi::MotorGroup Hardware::left_drive = {1, 2};
-okapi::MotorGroup Hardware::right_drive = {3, 4};
-//The
-TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, okapi::AbstractMotor::gearset::green);
+okapi::MotorGroup Hardware::left_drive = {1};
+okapi::MotorGroup Hardware::right_drive = {3};
+
+TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, okapi::AbstractMotor::gearset::green, 4.0);
 
 //Lift motors separated based on reversal
 //okapi::MotorGroup Hardware::lift_motors1 = {6, 8};
