@@ -17,8 +17,8 @@ public:
 //Constructor
   rd4Bar(okapi::MotorGroup lift_motors1, okapi::MotorGroup lift_motors2, int holdingPower) : lift_motors1(lift_motors1), lift_motors2(lift_motors2){
     this -> holdingPower = holdingPower;
-    lift_motors2.setReversed(true);
-    lift_motors1.setReversed(false);
+    lift_motors2.setReversed(false);
+    lift_motors1.setReversed(true);
   }
 
 //Set all motors to a positive velcity to raise the lift indefinitely

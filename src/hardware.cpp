@@ -34,7 +34,7 @@ TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, ok
 //okapi::MotorGroup Hardware::lift_motors1 = {6, 8};
 //okapi::MotorGroup Hardware::lift_motors2 = {5, 7};  //reversed
 
-rd4Bar Hardware::lift({6, 8}, {5, 7}, 20);
+rd4Bar Hardware::lift({5, 8}, {6, 7}, 20);
 
 Motor Hardware::left_intake(9);
 Motor Hardware::right_intake(10);
