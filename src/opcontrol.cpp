@@ -21,7 +21,7 @@ void opcontrol() {
 		if(Hardware::master.get_digital_new_press(DIGITAL_X))
 		{
 			//Hardware::left_drive.moveAbsolute(5, 100);
-			while(Hardware::drive_system.drive_forward(12, .5))
+			while(!Hardware::drive_system.drive_forward(12, .5))
 			{
 				pros::delay(20);
 			}
@@ -29,6 +29,8 @@ void opcontrol() {
 
 		int left = Hardware::master.get_analog(ANALOG_LEFT_Y);
 		int right = Hardware::master.get_analog(ANALOG_RIGHT_Y);
+
+		pros::lcd::print(0, "position: %f", Hardware::left_drive.getPosition());
 
 		//Hardware::drive_system.drive(left, right);
 
@@ -41,6 +43,8 @@ void opcontrol() {
 		else if(Hardware::lift.isMoving()){
 			Hardware::lift.stop();
 		}
+
+		Hardware::drive_system.drive(left, right);
 
 		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_A), Hardware::master.get_digital(DIGITAL_B));
 

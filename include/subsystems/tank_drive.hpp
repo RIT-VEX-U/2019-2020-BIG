@@ -21,7 +21,7 @@ private:
   //As in y=mx+b, deceleration = p * (target - current) + feedforward
   float drive_accel = .8;
   float drive_feedforward = .1;
-  float drive_p = .5;
+  float drive_p = .1;
 
   bool initialize_func = false;
   okapi::Timer timer;
@@ -69,7 +69,7 @@ public:
 
     float speed = (inches > 0 ? 1 : -1) * acceleration * deceleration * percent_speed * (int)gearset;
 
-    pros::lcd::print(0, "inches: %f", inches / wheel_size);
+    pros::lcd::print(0, "position: %f", left_side.getPosition());
 
     left_side.moveVelocity(speed);
     right_side.moveVelocity(speed);
@@ -79,6 +79,7 @@ public:
     {
       left_side.moveVelocity(0);
       right_side.moveVelocity(0);
+      initialize_func = false;
       return true;
     }
 
@@ -93,7 +94,7 @@ public:
   the distance traveled based on the wheel size easier.
   */
   TankDrive(okapi::MotorGroup left_side, okapi::MotorGroup right_side, okapi::AbstractMotor::gearset gearset, float wheel_size):
-  left_side(left_side), right_side(right_side), gearset(gearset), wheel_size(wheel_size)
+  left_side(left_side), right_side(right_side), gearset(gearset), wheel_size(wheel_size * 3.1415926)
   {
     left_side.setGearing(gearset);
     right_side.setGearing(gearset);
