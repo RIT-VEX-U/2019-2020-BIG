@@ -17,6 +17,8 @@
  */
 void opcontrol() {
 	logging::clearLogFile();
+	//pros::lcd::set_text(1, "Hi, Shane!");
+	//pros::lcd::print(2, "Before if statement");
 	while (true) {
 
 		int left = Hardware::master.get_analog(ANALOG_LEFT_Y);
@@ -24,14 +26,20 @@ void opcontrol() {
 
 		Hardware::drive_system.drive(left, right);
 
+
+		//pros::lcd::print(2, "Before if statement");
 		if(Hardware::master.get_digital(DIGITAL_R2)){
-			Hardware::lift.raise(200);
+			//pros::lcd::print(2, "If statement was reached");
+			//Hardware::lift.raise(200);
+			Motor(5).move(200);
 		}
 		else if(Hardware::master.get_digital(DIGITAL_R1)){
-			Hardware::lift.lower(200);
+		//	Hardware::lift.lower(200);
+			Motor(5).move(-200);
 		}
 		else if(Hardware::lift.isMoving()){
-			Hardware::lift.stop();
+			//Hardware::lift.stop();
+			Motor(5).move(0);
 		}
 
 		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_A), Hardware::master.get_digital(DIGITAL_B));

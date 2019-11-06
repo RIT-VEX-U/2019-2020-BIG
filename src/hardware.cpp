@@ -32,10 +32,10 @@ okapi::MotorGroup Hardware::right_drive = {3, 4};
 TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, okapi::AbstractMotor::gearset::green);
 
 //Lift motors separated based on reversal
-okapi::MotorGroup Hardware::lift_motors1 = {6, 8};
-okapi::MotorGroup Hardware::lift_motors2 = {5, 7};  //reversed
+//okapi::MotorGroup Hardware::lift_motors1 = {6, 8};
+//okapi::MotorGroup Hardware::lift_motors2 = {5, 7};  //reversed
 
-rd4Bar Hardware::lift(Hardware::lift_motors1, Hardware::lift_motors2, 20);
+rd4Bar Hardware::lift({6, 8}, {5, 7}, 20);
 
 Motor Hardware::left_intake(9);
 Motor Hardware::right_intake(10);
