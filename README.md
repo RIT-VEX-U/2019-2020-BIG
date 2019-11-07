@@ -1,8 +1,11 @@
 # 2019-2020-BIG
 Motor Layout(11):
 -Drive Terrain: 4 motors (200RPM) H-Drive.
+
 -Lift System: 4 motors (200RPM), 2 for left spinning in opposite directions, 2 on right in opposite directions
+
 -Intake Rollers: 2 motors (200RPM) spinning opposite direction
+
 -Magazine: 1 motor (200RPM) for opening/closing choocher
 
 
