@@ -31,7 +31,7 @@ namespace logging {
      * Call this once before your main loop.
      */
     static void clearLogFile() {
-        std::ofstream(LOG_FILE_PATH);
+        std::ofstream(LOG_FILE_PATH, std::ios::trunc);
     }
 
     /**
@@ -62,7 +62,7 @@ namespace logging {
      */
     template<class... Args>
     void log(Args&&... args) {
-        std::ofstream out(LOG_FILE_PATH);
+        std::ofstream out(LOG_FILE_PATH, std::ios::app);
         out << pros::millis();
         impl::logHelper(out, std::forward<Args>(args)...);
         out << '\n';

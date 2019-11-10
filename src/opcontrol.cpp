@@ -48,7 +48,7 @@ void opcontrol() {
 
 		//Log all motors
 		//Hardware::drive_system.logDrive();
-		//Hardware::lift.logLift();
+		Hardware::lift.logLift();
 
 
 		pros::delay(20);
