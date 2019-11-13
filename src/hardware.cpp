@@ -43,4 +43,4 @@ HorizIntake Hardware::horiz_intake(Hardware::left_intake, Hardware::right_intake
 
 Motor Hardware::claw(11,0);
 
-Controller Hardware::master(E_CONTROLLER_MASTER);
+Controller Hardware::controller(E_CONTROLLER_MASTER);

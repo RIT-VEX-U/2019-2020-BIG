@@ -29,7 +29,7 @@ namespace Hardware
 
   // static Vision camera;
 
-  extern Controller master;
+  extern Controller controller;
   extern Motor blank;
 };
 #endif

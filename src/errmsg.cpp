@@ -16,11 +16,11 @@ BB Intake-Gate Open	Yes	No	Yes
 
 // rumble the controller
 void get_ready_to_rumble(){
-  Hardware::master.print(3, 0, ".            ");
+  Hardware::controller.print(3, 0, ".            ");
 }
 // print to controller
 void controller_display(char *errmsg){
-  Hardware::master.print(0, 0, errmsg);
+  Hardware::controller.print(0, 0, errmsg);
 }
 
 //print to brain
@@ -35,7 +35,7 @@ void brain_display(std::string errmsg){
 
 //Low Controller Battery	Yes	No	Yes
 void error_checking(){
-if(Hardware::master.get_battery_level() / Hardware::master.get_battery_capacity() < 0.2){
+if(Hardware::controller.get_battery_level() / Hardware::controller.get_battery_capacity() < 0.2){
   get_ready_to_rumble();
   controller_display("Controller Battery Low\n");
 }
