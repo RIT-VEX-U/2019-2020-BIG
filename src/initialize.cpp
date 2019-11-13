@@ -19,12 +19,14 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+	pros::lcd::set_text(1, "Hi, Shane!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
 
 	Hardware::right_drive.setReversed(true);
 	Hardware::left_drive.setReversed(false);
+
+	//Hardware::lift_motors2.setReversed(true);
 }
 
 /**
