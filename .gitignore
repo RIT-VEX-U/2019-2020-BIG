@@ -2,3 +2,9 @@ bin/*
 .vscode/*
 
 compile_commands.json
+
+log_viewer/.idea/
+
+log_viewer/venv/
+
+log_viewer/motor_log.txt
