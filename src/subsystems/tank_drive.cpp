@@ -24,8 +24,6 @@ bool TankDrive::drive_forward(double inches, double percent_speed)
   if(initialize_func == false)
   {
     //Reset the class timer, reset absolute position to 0 on startup.
-    last_time = timer.millis().getValue();
-    last_time_2 = 0;
     left_side.tarePosition();
     right_side.tarePosition();
     is_checking_standstill = false;
@@ -41,7 +39,7 @@ bool TankDrive::drive_forward(double inches, double percent_speed)
 
   pd = pd > 1.0 ? 1.0 : pd < -1.0 ? -1.0 : pd;
 
-  float out = pd * percent_speed;
+  float out = pd * max_speed;
 
   pros::lcd::print(0, "speed: %f", out);
 
@@ -57,9 +55,68 @@ bool TankDrive::drive_forward(double inches, double percent_speed)
   {
     if(is_checking_standstill == false)
     {
-      last_time_2 = timer.millis().getValue();
+      last_time_2 = (pros::millis() / 1000.0);
       is_checking_standstill = true;
-    }else if (timer.millis().getValue() - last_time_2 > drive_standstill_time)
+    }else if ((pros::millis() / 1000.0) - last_time_2 > drive_standstill_time)
+    {
+      left_side.moveVelocity(0);
+      right_side.moveVelocity(0);
+      is_checking_standstill = false;
+      initialize_func = false;
+      return true;
+    }
+  }else
+  {
+    is_checking_standstill = false;
+  }
+
+  return false;
+}
+/**
+Autonomously turn the robot x degrees, using feedback from a gyroscope
+
+For left turns, use negative degrees, for right, use positive.
+*/
+bool TankDrive::turn_degrees(double degrees, double percent_speed)
+{
+  //Initialize the function, reset gyro and timers
+  if(initialize_func == false)
+  {
+    gyro.reset();
+    turn_last_angle = 0;
+    last_time = pros::millis() / 1000.0;
+    is_checking_standstill = false;
+    initialize_func = true;
+  }
+
+  // gathering data from the sensors
+  double max_speed = fabs(percent_speed);
+  double current_angle = gyro.get();
+  double delta = current_angle - turn_last_angle;
+
+  // Calculate the feedback loop: feedforward + (p * delta) + (d * velocity)
+  float pd = (turn_feedforward)
+           + (turn_p * (degrees - current_angle))
+           + (turn_d * (delta / ((pros::millis() / 1000.0) - last_time)));
+
+  // Store values from this iteration for next iteration
+  last_time = pros::millis() / 1000.0;
+  turn_last_angle = current_angle;
+
+  // Limit the pd value between -1.0 and 1.0
+  pd = (pd > 1.0) ? 1.0 : (pd < -1.0) ? -1.0 : pd;
+
+  left_side.moveVelocity((int)gearset * pd * max_speed);
+  right_side.moveVelocity((int)gearset * pd * max_speed * -1);
+
+  // Exit condition: if the position is within x deadband for t seconds, return true.
+  if(fabs(delta) < turn_deadband)
+  {
+    if(is_checking_standstill == false)
+    {
+      last_time_2 = pros::millis() / 1000.0;
+      is_checking_standstill = true;
+    }else if((pros::millis() / 1000.0) - last_time_2 > turn_standstill_time)
     {
       left_side.moveVelocity(0);
       right_side.moveVelocity(0);
