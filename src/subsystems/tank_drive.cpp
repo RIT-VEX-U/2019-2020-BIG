@@ -33,9 +33,9 @@ bool TankDrive::drive_forward(double inches, double percent_speed)
   double max_speed = fabs(percent_speed);
 
   //Calculate p, d, and feedforward for deceleration
-  float pd = ((inches > 0 ? 1 : -1) * drive_feedforward)
-            + ((inches - (left_side.getPosition() * wheel_size)) * drive_p);
-            + (left_side.getActualVelocity() * wheel_size * drive_d);
+  float pd = ((inches > 0 ? 1 : -1) * config->drive_feedforward)
+            + ((inches - (left_side.getPosition() * (config->wheel_size * PI))) * config->drive_p);
+            + (left_side.getActualVelocity() * (config->wheel_size * PI) * config->drive_d);
 
   pd = pd > 1.0 ? 1.0 : pd < -1.0 ? -1.0 : pd;
 
@@ -46,18 +46,18 @@ bool TankDrive::drive_forward(double inches, double percent_speed)
   left_side.moveVelocity(out * (int)gearset);
   right_side.moveVelocity(out * (int)gearset);
 
-  float delta = fabs((inches / wheel_size) - left_side.getPosition());
+  float delta = fabs((inches / (config->wheel_size * PI)) - left_side.getPosition());
 
   // Exit condition
   // If the delta between the target position and the current position is within
   // a defined range for {drive_standstill_time} seconds, then return true
-  if(delta < drive_deadband)
+  if(delta < config->drive_deadband)
   {
     if(is_checking_standstill == false)
     {
       last_time_2 = (pros::millis() / 1000.0);
       is_checking_standstill = true;
-    }else if ((pros::millis() / 1000.0) - last_time_2 > drive_standstill_time)
+    }else if ((pros::millis() / 1000.0) - last_time_2 > config->drive_standstill_time)
     {
       left_side.moveVelocity(0);
       right_side.moveVelocity(0);
@@ -95,9 +95,9 @@ bool TankDrive::turn_degrees(double degrees, double percent_speed)
   double delta = current_angle - turn_last_angle;
 
   // Calculate the feedback loop: feedforward + (p * delta) + (d * velocity)
-  float pd = (turn_feedforward)
-           + (turn_p * (degrees - current_angle))
-           + (turn_d * (delta / ((pros::millis() / 1000.0) - last_time)));
+  float pd = (config->turn_feedforward)
+           + (config->turn_p * (degrees - current_angle))
+           + (config->turn_d * (delta / ((pros::millis() / 1000.0) - last_time)));
 
   // Store values from this iteration for next iteration
   last_time = pros::millis() / 1000.0;
@@ -110,13 +110,13 @@ bool TankDrive::turn_degrees(double degrees, double percent_speed)
   right_side.moveVelocity((int)gearset * pd * max_speed * -1);
 
   // Exit condition: if the position is within x deadband for t seconds, return true.
-  if(fabs(delta) < turn_deadband)
+  if(fabs(delta) < config->turn_deadband)
   {
     if(is_checking_standstill == false)
     {
       last_time_2 = pros::millis() / 1000.0;
       is_checking_standstill = true;
-    }else if((pros::millis() / 1000.0) - last_time_2 > turn_standstill_time)
+    }else if((pros::millis() / 1000.0) - last_time_2 > config->turn_standstill_time)
     {
       left_side.moveVelocity(0);
       right_side.moveVelocity(0);

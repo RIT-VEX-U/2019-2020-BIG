@@ -25,6 +25,8 @@ void initialize() {
 
 	Hardware::right_drive.setReversed(true);
 	Hardware::left_drive.setReversed(false);
+
+	config::initialize();
 }
 
 /**

@@ -7,40 +7,52 @@
 #include <ctime>
 #include "logging.hpp"
 
+#define PI 3.1415926536
+
 class TankDrive
 {
+  public:
+
+  struct config_t
+  {
+
+  //Autonomous control variables
+  //As in y=mx+b, deceleration = p * (target - current) + (velocity * d)+ feedforward
+  // drive_forward() variables
+  float drive_feedforward;
+  float drive_p;
+  float drive_d;
+  float drive_standstill_time;
+  float drive_deadband;
+
+  // turn_degrees() variables
+  float turn_feedforward;
+  float turn_p;
+  float turn_d;
+  float turn_deadband;
+  float turn_standstill_time;
+
+  float wheel_size;
+
+  };
+
 private:
   okapi::MotorGroup left_side;
   okapi::MotorGroup right_side;
 
   okapi::AbstractMotor::gearset gearset;
 
-  okapi::ADIGyro gyro;
-
-  float wheel_size;
-
-  //Autonomous control variables
-  //As in y=mx+b, deceleration = p * (target - current) + (velocity * d)+ feedforward
-  // drive_forward() variables
-  float drive_feedforward = 0.0;
-  float drive_p = .1;
-  float drive_d = .05;
-  float drive_standstill_time = .3;
-  float drive_deadband = .1;
-
-  // turn_degrees() variables
-  float turn_feedforward = 0.0;
-  float turn_p = .1;
-  float turn_d = .05;
-  float turn_last_angle = 0;
-  float turn_deadband = 1.0;
-  float turn_standstill_time = .3;
+  okapi::ADIGyro gyro;  
 
   // common variables
   bool initialize_func = false;
   bool is_checking_standstill = false;
   double last_time = 0;
   double last_time_2 = 0;
+
+  float turn_last_angle;
+
+  const config_t *config;
 
 public:
 
@@ -75,8 +87,8 @@ public:
   Initialize the drive encoders to measure in number of rotations, to make computing
   the distance traveled based on the wheel size easier.
   */
-  TankDrive(okapi::MotorGroup left_side, okapi::MotorGroup right_side, okapi::AbstractMotor::gearset gearset, float wheel_size, okapi::ADIGyro gyro):
-  left_side(left_side), right_side(right_side), gearset(gearset), wheel_size(wheel_size * 3.1415926), gyro(gyro)
+  TankDrive(okapi::MotorGroup left_side, okapi::MotorGroup right_side, okapi::AbstractMotor::gearset gearset, okapi::ADIGyro gyro, config_t *config):
+  left_side(left_side), right_side(right_side), gearset(gearset), gyro(gyro), config(config)
   {
     left_side.setGearing(gearset);
     right_side.setGearing(gearset);

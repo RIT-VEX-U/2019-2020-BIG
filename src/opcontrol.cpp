@@ -21,7 +21,7 @@ void opcontrol() {
 		if(Hardware::master.get_digital_new_press(DIGITAL_X))
 		{
 			//Hardware::left_drive.moveAbsolute(5, 100);
-			while(!Hardware::drive_system.drive_forward(12, .5))
+			while(!Hardware::drive_system.turn_degrees(12, .5))
 			{
 				pros::delay(20);
 			}
@@ -30,7 +30,7 @@ void opcontrol() {
 		int left = Hardware::master.get_analog(ANALOG_LEFT_Y);
 		int right = Hardware::master.get_analog(ANALOG_RIGHT_Y);
 
-		pros::lcd::print(0, "position: %f", Hardware::left_drive.getPosition());
+		pros::lcd::print(0, "angle: %f", Hardware::gyro.get());
 
 		//Hardware::drive_system.drive(left, right);
 

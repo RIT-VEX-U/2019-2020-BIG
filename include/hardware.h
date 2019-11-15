@@ -7,6 +7,7 @@
 #include "pros/apix.h"
 #include "okapi/impl/device/motor/motorGroup.hpp"
 #include "okapi/impl/device/rotarysensor/adiGyro.hpp"
+#include "config.h"
 
 using namespace pros;
 

@@ -6,12 +6,12 @@ using namespace pros;
 
 Motor Hardware::blank(30,false);
 
-okapi::MotorGroup Hardware::left_drive = {1};
-okapi::MotorGroup Hardware::right_drive = {3};
+okapi::MotorGroup Hardware::left_drive = {1,2};
+okapi::MotorGroup Hardware::right_drive = {3,4};
 
-okapi::ADIGyro Hardware::gyro(1);
+okapi::ADIGyro Hardware::gyro(1, .1);
 
-TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, okapi::AbstractMotor::gearset::green, 4.0, Hardware::gyro);
+TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, okapi::AbstractMotor::gearset::green, Hardware::gyro, &config::drive_config);
 
 okapi::MotorGroup Hardware::lift_motors = {5, -6, 7, -8};
 
