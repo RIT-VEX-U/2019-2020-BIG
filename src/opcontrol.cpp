@@ -35,13 +35,21 @@ void opcontrol() {
 		Hardware::drive_system.drive(left, right);
 
 		if(Hardware::master.get_digital(DIGITAL_R2)){
-			Hardware::lift.raise(200);
+			Hardware::lift.raise(100);
+			//Hardware::lift.start_log();
 		}
 		else if(Hardware::master.get_digital(DIGITAL_R1)){
-			Hardware::lift.lower(200);
+			Hardware::lift.lower(100);
 		}
 		else /*if(Hardware::lift.isMoving())*/{
 			Hardware::lift.stop();
+		}
+
+		if(Hardware::master.get_digital(DIGITAL_L1)){
+			Hardware::lift.moveHigh();
+		}
+		else if(Hardware::master.get_digital(DIGITAL_L2)){
+			Hardware::lift.moveLow();
 		}
 
 		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_A), Hardware::master.get_digital(DIGITAL_B));
@@ -50,7 +58,8 @@ void opcontrol() {
 		//Hardware::drive_system.logDrive();
 		//Hardware::lift.logLift();
 
-
+		pros::lcd::print(1, "%f, %f, %f, %f", Hardware::lift1.getPosition(), Hardware::lift2.getPosition(),
+																					Hardware::lift3.getPosition(), Hardware::lift4.getPosition());
 		pros::delay(20);
 	}
 }
