@@ -10,9 +10,8 @@ private:
   okapi::MotorGroup lift_motors1;
   okapi::MotorGroup lift_motors2;
 
-  //Encoder vals in rotations for different heights
-  float highVal = 1.6;
-  float lowVal = 0.8;
+  //Position it is currently holding, -1 if none
+  float holdingPos = -1;
 
   //The minimum motor velocity needed to hold the lift in a certain position
   int holdingPower;  //This is a guess, will need to be adjusted
@@ -47,41 +46,42 @@ public:
   }
 
 //Raise/Lower the lift to a specified point and have it keep that poisition
-  void moveTo(float encoderVal){
+  void moveTo(float encoderVal, bool hold){
     while(fabs(lift_motors1.getPosition()) < encoderVal){
       lift_motors1.moveVelocity(-100);
       lift_motors2.moveVelocity(-100);
     }
     lift_motors1.moveVelocity(holdingPower);
     lift_motors2.moveVelocity(holdingPower);
-    //lift_motors1.moveAbsolute(encoderVal, 100);
-    //lift_motors2.moveAbsolute(encoderVal, 100);
-  }
 
-  void moveHigh(){
-    moveTo(highVal);
-  }
-
-  void moveLow(){
-    moveTo(lowVal);
-  }
-
-  void hold_pos(int pos){
-    while(true){
-      if(lift_motors1.getPosition() > pos && lift_motors2.getPosition() > pos){
-        lift_motors1.moveVoltage(lift_motors1.getVoltage() - 1);
-        lift_motors2.moveVoltage(lift_motors2.getVoltage() - 1);
-      }
-      else if(lift_motors1.getPosition() < pos && lift_motors2.getPosition() < pos){
-        lift_motors1.moveVoltage(lift_motors1.getVoltage() + 1);
-        lift_motors2.moveVoltage(lift_motors2.getVoltage() + 1);
-      }
+    if(hold){
+      holdingPos = encoderVal;
+      hold_pos(encoderVal);
     }
   }
 
-  void start_hold_pos(int pos){
-    pros::Task hold_pos_task(void (*hold_pos)(int));
+  void moveHigh(){
+    moveTo(highVal, true);
   }
+
+  void moveLow(){
+    moveTo(lowVal, true);
+  }
+
+  void hold_pos(float pos){
+    if(lift_motors1.getPosition() > pos && lift_motors2.getPosition() > pos){
+      lift_motors1.moveVoltage(lift_motors1.getVoltage() - 1);
+      lift_motors2.moveVoltage(lift_motors2.getVoltage() - 1);
+    }
+    else if(lift_motors1.getPosition() < pos && lift_motors2.getPosition() < pos){
+      lift_motors1.moveVoltage(lift_motors1.getVoltage() + 1);
+      lift_motors2.moveVoltage(lift_motors2.getVoltage() + 1);
+    }
+  }
+
+  //void start_hold_pos(int pos){
+    //pros::Task hold_pos_task(void (*hold_pos)(int));
+  //}
 
 //  bool isDown(){
 //  }
@@ -104,6 +104,8 @@ public:
   float getEncoderVal(){
     return lift_motors1.getPosition();
   }
+
+  float getHoldingPos(){ return holdingPos; }
 
   /*void setZero(){
     lift_motors1.setZeroPosition();

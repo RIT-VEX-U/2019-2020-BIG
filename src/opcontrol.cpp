@@ -15,6 +15,13 @@
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+
+ //Encoder vals in rotations for different heights
+ float lift_heights[] = {0.4, 0.8, 1.2, 1.6};
+ int current_height = -1;
+
+ int HEIGHT_MAX = /*lift_heights.size()*/ 4;	//Will need to figure out why this isn't taking size
+
 void opcontrol() {
 	logging::clearLogFile();
 	//pros::lcd::set_text(1, "Hi, Shane!");
@@ -46,10 +53,21 @@ void opcontrol() {
 		}
 
 		if(Hardware::master.get_digital(DIGITAL_L1)){
-			Hardware::lift.moveHigh();
+			if(current_height < HEIGHT_MAX){
+				current_height++;
+				Hardware::lift.moveTo(lift_heights[current_height], true);
+			}
 		}
 		else if(Hardware::master.get_digital(DIGITAL_L2)){
-			Hardware::lift.moveLow();
+			if(current_height > -1){
+				current_height--;
+				if(current_height > -1){
+					Hardware::lift.moveLow();
+				}
+				else{
+					//Put lift all the way down
+				}
+			}
 		}
 
 		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_A), Hardware::master.get_digital(DIGITAL_B));
