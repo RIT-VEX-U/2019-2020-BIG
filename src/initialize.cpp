@@ -23,9 +23,6 @@ void initialize() {
 
 	pros::lcd::register_btn1_cb(on_center_button);
 
-	Hardware::right_drive.setReversed(true);
-	Hardware::left_drive.setReversed(false);
-
 	config::initialize();
 }
 

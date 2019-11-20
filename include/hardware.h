@@ -13,8 +13,11 @@ using namespace pros;
 
 namespace Hardware
 {
-  extern okapi::MotorGroup left_drive;
-  extern okapi::MotorGroup right_drive;
+
+  extern pros::Motor left_front;
+  extern pros::Motor right_front;
+  extern pros::Motor left_rear;
+  extern pros::Motor right_rear;
 
   extern okapi::ADIGyro gyro;
 

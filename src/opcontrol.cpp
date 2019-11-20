@@ -21,18 +21,20 @@ void opcontrol() {
 		if(Hardware::master.get_digital_new_press(DIGITAL_X))
 		{
 			//Hardware::left_drive.moveAbsolute(5, 100);
-			while(!Hardware::drive_system.turn_degrees(12, .5))
+			while(!Hardware::drive_system.turn_degrees(90, .3))
 			{
+				pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
 				pros::delay(20);
 			}
 		}
 
-		int left = Hardware::master.get_analog(ANALOG_LEFT_Y);
-		int right = Hardware::master.get_analog(ANALOG_RIGHT_Y);
+		if(Hardware::master.get_digital(DIGITAL_B))
+			Hardware::gyro.reset();
 
-		pros::lcd::print(0, "angle: %f", Hardware::gyro.get());
+		double left = Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
+		double right = Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
 
-		//Hardware::drive_system.drive(left, right);
+		pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
 
 		if(Hardware::master.get_digital(DIGITAL_R2)){
 			Hardware::lift.raise(127);
