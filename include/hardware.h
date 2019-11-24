@@ -6,13 +6,20 @@
 #include "subsystems/horiz_intake.hpp"
 #include "pros/apix.h"
 #include "okapi/impl/device/motor/motorGroup.hpp"
+#include "okapi/impl/device/rotarysensor/adiGyro.hpp"
+#include "config.h"
 
 using namespace pros;
 
 namespace Hardware
 {
-  extern okapi::MotorGroup left_drive;
-  extern okapi::MotorGroup right_drive;
+
+  extern pros::Motor left_front;
+  extern pros::Motor right_front;
+  extern pros::Motor left_rear;
+  extern pros::Motor right_rear;
+
+  extern okapi::ADIGyro gyro;
 
   extern TankDrive drive_system;
 

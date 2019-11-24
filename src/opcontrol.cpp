@@ -30,16 +30,21 @@ void opcontrol() {
 		if(Hardware::master.get_digital_new_press(DIGITAL_X))
 		{
 			//Hardware::left_drive.moveAbsolute(5, 100);
-			while(Hardware::drive_system.drive_forward(12, .5))
+			while(!Hardware::drive_system.turn_degrees(90, .3))
 			{
+				pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
 				pros::delay(20);
 			}
 		}
 
-		int left = Hardware::master.get_analog(ANALOG_LEFT_Y);
-		int right = Hardware::master.get_analog(ANALOG_RIGHT_Y);
+		if(Hardware::master.get_digital(DIGITAL_B))
+			Hardware::gyro.reset();
 
-		Hardware::drive_system.drive(left, right);
+		double left = Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
+		double right = Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
+    Hardware::drive_system.drive(left, right);
+
+		pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
 
     //All functionality for when lift is not holding a position
     if(!Hardware::lift.is_holding()){
@@ -80,6 +85,8 @@ void opcontrol() {
 		  }
       Hardware::lift.hold_pos();
     }
+
+		Hardware::drive_system.drive(left, right);
 
 		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_A), Hardware::master.get_digital(DIGITAL_B));
 

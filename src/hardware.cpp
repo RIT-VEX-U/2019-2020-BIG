@@ -25,10 +25,14 @@ using namespace pros;
 
 Motor Hardware::blank(30,false);
 
-okapi::MotorGroup Hardware::left_drive = {1};
-okapi::MotorGroup Hardware::right_drive = {3};
+okapi::ADIGyro Hardware::gyro(1, .1);
 
-TankDrive Hardware::drive_system(Hardware::left_drive, Hardware::right_drive, okapi::AbstractMotor::gearset::green, 4.0);
+pros::Motor Hardware::left_front(1, false);
+pros::Motor Hardware::right_front(3, true);
+pros::Motor Hardware::left_rear(2, false);
+pros::Motor Hardware::right_rear(4, true);
+
+TankDrive Hardware::drive_system(Hardware::left_front, Hardware::right_front, Hardware::left_rear, Hardware::right_rear, pros::E_MOTOR_GEARSET_18, Hardware::gyro, &config::drive_config);
 
 okapi::Motor Hardware::lift1(5);
 okapi::Motor Hardware::lift2(6);
@@ -43,5 +47,7 @@ Motor Hardware::right_intake(10);
 HorizIntake Hardware::horiz_intake(Hardware::left_intake, Hardware::right_intake);
 
 Motor Hardware::claw(11,0);
+
+
 
 Controller Hardware::master(E_CONTROLLER_MASTER);

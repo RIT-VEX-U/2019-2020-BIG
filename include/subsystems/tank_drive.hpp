@@ -3,29 +3,55 @@
 
 #include "okapi/impl/device/motor/motorGroup.hpp"
 #include "okapi/impl/util/timer.hpp"
+#include "okapi/impl/device/rotarysensor/adiGyro.hpp"
+#include "utils/pid.hpp"
 #include <ctime>
 #include "logging.hpp"
 
+#define PI 3.1415926536
+
 class TankDrive
 {
-private:
-  okapi::MotorGroup left_side;
-  okapi::MotorGroup right_side;
+  public:
 
-  okapi::AbstractMotor::gearset gearset;
+  enum omni_config_t
+  {
+    front_wheel_dr,
+    rear_wheel_dr,
+    center_dr
+  };
 
-  float wheel_size;
+  struct config_t
+  {
 
   //Autonomous control variables
-  //acceleration measured in seconds until full power
-  //As in y=mx+b, deceleration = p * (target - current) + feedforward
-  float drive_accel = .8;
-  float drive_feedforward = .1;
-  float drive_p = .5;
+  //As in y=mx+b, deceleration = p * (target - current) + (velocity * d)+ feedforward
+  // drive_forward() variables
+  PID::config_t *drive_pid;
 
+  // turn_degrees() variables
+  PID::config_t *turn_pid;
+
+  float wheel_size;
+  omni_config_t omni_config;
+
+  };
+
+private:
+  pros::Motor left_front, right_front, left_rear, right_rear;
+
+  int gearset;
+
+  okapi::ADIGyro gyro;  
+
+
+  // common variables
   bool initialize_func = false;
-  okapi::Timer timer;
-  double last_time;
+
+  const config_t *config;
+
+  PID *drive_pid;
+  PID *turn_pid;
 
 public:
 
@@ -33,14 +59,9 @@ public:
   Drive the robot with differential drive.
   Left axis is the Y axis on the left joystick, same for the right joystick.
 
-  Takes into account that the joystick outputs between -127.0 and +127, and the
-  motors input between -(min rpm) and +(max rpm) based on the gearset used.
+  Inputs are "percentage", between -1.0 and +1.0
   */
-  void drive(int left_axis, int right_axis)
-  {
-    left_side.moveVelocity((left_axis / 127.0) * (int)gearset);
-    right_side.moveVelocity((right_axis / 127.0) * (int)gearset);
-  }
+  void drive(double left_in, double right_in);
 
   /**
   Autonomously drive the robot x inches forward (or negative inches for reverse)
@@ -48,42 +69,14 @@ public:
 
   Will stop and return true after reaching the target.
   */
-  bool drive_forward(double inches, double percent_speed)
-  {
-    if(initialize_func == false)
-    {
-      //Reset the class timer, reset absolute position to 0 on startup.
-      last_time = timer.millis().getValue();
-      left_side.tarePosition();
-      right_side.tarePosition();
-      initialize_func = true;
-    }
+  bool drive_forward(double inches, double percent_speed);
 
-    //Calculate acceleration between 0.0 and 1.0
-    double acceleration = (timer.millis().getValue() - last_time) * (1 / drive_accel);
-    acceleration = (acceleration > 1.0) ? 1.0 : acceleration;
+  /**
+  Autonomously turn the robot x degrees, using feedback from a gyroscope
 
-    //Calculate p and feedforward for deceleration
-    float deceleration = drive_feedforward + ((fabs(inches) - fabs(left_side.getPosition())) * drive_p);
-    deceleration = (deceleration > 1.0) ? 1.0 : deceleration;
-
-    float speed = (inches > 0 ? 1 : -1) * acceleration * deceleration * percent_speed * (int)gearset;
-
-    pros::lcd::print(0, "inches: %f", inches / wheel_size);
-
-    left_side.moveVelocity(speed);
-    right_side.moveVelocity(speed);
-
-    //The motors have finished moving
-    if(fabs((inches / wheel_size) - left_side.getPosition()) < (.5 / wheel_size))
-    {
-      left_side.moveVelocity(0);
-      right_side.moveVelocity(0);
-      return true;
-    }
-
-    return false;
-  }
+  For left turns, use negative degrees, for right, use positive.
+  */
+  bool turn_degrees(double degrees, double percent_speed);
 
   /**
   Create the tank drive object from two separate motor groups, what gearset they
@@ -92,14 +85,21 @@ public:
   Initialize the drive encoders to measure in number of rotations, to make computing
   the distance traveled based on the wheel size easier.
   */
-  TankDrive(okapi::MotorGroup left_side, okapi::MotorGroup right_side, okapi::AbstractMotor::gearset gearset, float wheel_size):
-  left_side(left_side), right_side(right_side), gearset(gearset), wheel_size(wheel_size)
+  TankDrive(pros::Motor left_front, pros::Motor right_front, pros::Motor left_rear, pros::Motor right_rear, pros::motor_gearset_e_t gearset, okapi::ADIGyro gyro, config_t *config):
+  left_front(left_front), right_front(right_front), left_rear(left_rear), right_rear(right_rear), gearset((int)gearset == 0 ? 100 : (int)gearset == 1 ? 200 : 600), gyro(gyro), config(config)
   {
-    left_side.setGearing(gearset);
-    right_side.setGearing(gearset);
+    drive_pid = new PID(config->drive_pid);
+    turn_pid = new PID(config->turn_pid);
 
-    left_side.setEncoderUnits(okapi::AbstractMotor::encoderUnits::rotations);
-    right_side.setEncoderUnits(okapi::AbstractMotor::encoderUnits::rotations);
+    left_front.set_gearing(gearset);
+    right_front.set_gearing(gearset);
+    left_rear.set_gearing(gearset);
+    right_rear.set_gearing(gearset);
+
+    left_front.set_encoder_units(pros::E_MOTOR_ENCODER_ROTATIONS);
+    right_front.set_encoder_units(pros::E_MOTOR_ENCODER_ROTATIONS);
+    left_rear.set_encoder_units(pros::E_MOTOR_ENCODER_ROTATIONS);
+    right_rear.set_encoder_units(pros::E_MOTOR_ENCODER_ROTATIONS);
   }
 
 };
