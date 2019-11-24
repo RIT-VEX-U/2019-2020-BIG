@@ -51,32 +51,34 @@ public:
       lift_motors1.moveVelocity(-100);
       lift_motors2.moveVelocity(-100);
     }
-    lift_motors1.moveVelocity(holdingPower);
-    lift_motors2.moveVelocity(holdingPower);
 
     if(hold){
       holdingPos = encoderVal;
-      hold_pos(encoderVal);
+      hold_pos();
     }
   }
 
-  void moveHigh(){
-    moveTo(highVal, true);
+  void hold_pos(){
+    if(lift_motors1.getPosition() > holdingPos || lift_motors2.getPosition() > holdingPos){
+      //lift_motors1.moveVoltage(lift_motors1.getVoltage() - 1);
+      //lift_motors2.moveVoltage(lift_motors2.getVoltage() - 1);
+      holdingPower++;
+    }
+    else if(lift_motors1.getPosition() < holdingPos || lift_motors2.getPosition() < holdingPos){
+      //lift_motors1.moveVoltage(lift_motors1.getVoltage() + 1);
+      //lift_motors2.moveVoltage(lift_motors2.getVoltage() + 1);
+      holdingPower--;
+    }
+    lift_motors1.moveVoltage(holdingPower);
+    lift_motors2.moveVoltage(holdingPower);
   }
 
-  void moveLow(){
-    moveTo(lowVal, true);
-  }
+  bool is_holding(){ return holdingPos > -1; }
 
-  void hold_pos(float pos){
-    if(lift_motors1.getPosition() > pos && lift_motors2.getPosition() > pos){
-      lift_motors1.moveVoltage(lift_motors1.getVoltage() - 1);
-      lift_motors2.moveVoltage(lift_motors2.getVoltage() - 1);
-    }
-    else if(lift_motors1.getPosition() < pos && lift_motors2.getPosition() < pos){
-      lift_motors1.moveVoltage(lift_motors1.getVoltage() + 1);
-      lift_motors2.moveVoltage(lift_motors2.getVoltage() + 1);
-    }
+  float getHoldingPos(){ return holdingPos; }
+
+  void release_hold(){
+    holdingPos = -1;
   }
 
   //void start_hold_pos(int pos){
@@ -96,6 +98,8 @@ public:
       }
     }
 
+
+//TODO: broken??
 //Checks if there is voltage going to the lift motors
   bool isMoving(){
     return lift_motors1.getVoltage() > 0 || lift_motors2.getVoltage() > 0;
@@ -105,19 +109,6 @@ public:
     return lift_motors1.getPosition();
   }
 
-  float getHoldingPos(){ return holdingPos; }
-
-  /*void setZero(){
-    lift_motors1.setZeroPosition();
-  }*/
-
 };
-
-/*  void start_log(rd4Bar lift){
-    pros::Motor m1(5);
-    pros::Motor* m1_ptr = &m1;
-    //pros::task_t logLift = task_create(log_lift());
-    //pros::Task log_lift_task = new pros::Task(lift.log_lift);
-  }*/
 
 #endif
