@@ -88,8 +88,9 @@ public:
   TankDrive(pros::Motor left_front, pros::Motor right_front, pros::Motor left_rear, pros::Motor right_rear, pros::motor_gearset_e_t gearset, okapi::ADIGyro gyro, config_t *config):
   left_front(left_front), right_front(right_front), left_rear(left_rear), right_rear(right_rear), gearset((int)gearset == 0 ? 100 : (int)gearset == 1 ? 200 : 600), gyro(gyro), config(config)
   {
-    *drive_pid = PID(config->drive_pid);
-    *turn_pid = PID(config->turn_pid);
+    drive_pid = new PID(config->drive_pid);
+    turn_pid = new PID(config->turn_pid);
+
     left_front.set_gearing(gearset);
     right_front.set_gearing(gearset);
     left_rear.set_gearing(gearset);

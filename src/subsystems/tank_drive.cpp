@@ -38,6 +38,7 @@ Will stop and return true after reaching the target.
 */
 bool TankDrive::drive_forward(double inches, double percent_speed)
 {
+  
   if(initialize_func == false)
   {
     //Reset the class timer, reset absolute position to 0 on startup.
@@ -91,6 +92,5 @@ bool TankDrive::turn_degrees(double degrees, double percent_speed)
     initialize_func = false;
     return true;
   }
-
   return false;
 }
