@@ -49,7 +49,7 @@ bool TankDrive::drive_forward(double inches, double percent_speed)
     initialize_func = true;
   }
 
-  drive_pid->update(left_front.get_position());
+  drive_pid->update(left_front.get_position() * PI * config->wheel_size);
   drive(drive_pid->get(), drive_pid->get());
 
 
@@ -58,6 +58,7 @@ bool TankDrive::drive_forward(double inches, double percent_speed)
   // a defined range for {drive_standstill_time} seconds, then return true
   if(drive_pid->is_on_target())
   {
+    drive(0,0);
     initialize_func = false;
     return true;
   }

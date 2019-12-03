@@ -1,4 +1,5 @@
 #include "utils/pid.hpp"
+#include "api.h"
 
 /**
  * Reset the PID loop by resetting time since 0 and accumulated error.
@@ -19,18 +20,24 @@ void PID::reset()
  */
 void PID::update(double sensorVal)
 {
+    this->sensorVal = sensorVal;
+
     double time_delta = (pros::c::millis() / 1000.0) - last_time;
 
     accum_error += time_delta * get_error();
+    
 
     out = (config->feedforward)
         + (config->p * get_error())
         + (config->i * accum_error)
         + (config->d * (get_error() - last_error) / time_delta);
-
+    
     last_time = pros::c::millis() / 1000.0;
+    last_error = get_error();
 
+    pros::lcd::print(0, "accum: %f", accum_error);
     out = (out < lower_limit) ? lower_limit : (out > upper_limit) ? upper_limit : out;
+    
 }
 
 /**

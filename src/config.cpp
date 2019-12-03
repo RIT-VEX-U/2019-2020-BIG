@@ -9,7 +9,8 @@ void config::initialize()
     // drive_forward() config
     drive_pid_config.feedforward = 0;
     drive_pid_config.p= .1;
-    drive_pid_config.d= .1;
+    drive_pid_config.i = .000;
+    drive_pid_config.d= .000;
     drive_pid_config.on_target_time = .3;
     drive_pid_config.deadband = .1;  
 
@@ -24,9 +25,4 @@ void config::initialize()
     //      Drive System Configuration
     drive_config.wheel_size = 4;
     drive_config.omni_config = TankDrive::omni_config_t::center_dr;
-
-    drive_config.drive_pid = &drive_pid_config;
-    drive_config.turn_pid = &turn_pid_config;
-
-
 }

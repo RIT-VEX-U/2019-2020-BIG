@@ -20,12 +20,15 @@ void opcontrol() {
 	while (true) {
 		if(Hardware::master.get_digital_new_press(DIGITAL_X))
 		{
+			//pros::lcd::print(0, "%f", config::drive_pid_config.p);
+			
 			//Hardware::left_drive.moveAbsolute(5, 100);
-			while(!Hardware::drive_system.turn_degrees(90, .3))
+			while(!Hardware::drive_system.drive_forward(36, .5))
 			{
 				pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
 				pros::delay(20);
 			}
+			
 		}
 
 		if(Hardware::master.get_digital(DIGITAL_B))
@@ -48,7 +51,7 @@ void opcontrol() {
 
 		Hardware::drive_system.drive(left, right);
 
-		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_A), Hardware::master.get_digital(DIGITAL_B));
+		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_L2), Hardware::master.get_digital(DIGITAL_L1));
 
 		//Log all motors
 		//Hardware::drive_system.logDrive();
