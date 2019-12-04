@@ -23,7 +23,7 @@ void opcontrol() {
 			//pros::lcd::print(0, "%f", config::drive_pid_config.p);
 			
 			//Hardware::left_drive.moveAbsolute(5, 100);
-			while(!Hardware::drive_system.drive_forward(36, .5))
+			while(!Hardware::drive_system.turn_degrees(90, .5))
 			{
 				pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
 				pros::delay(20);
@@ -36,6 +36,7 @@ void opcontrol() {
 
 		double left = Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
 		double right = Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
+
 
 		pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
 
