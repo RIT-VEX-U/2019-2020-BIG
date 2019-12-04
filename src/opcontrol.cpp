@@ -17,18 +17,23 @@
  */
 void opcontrol() {
 	logging::clearLogFile();
+	char const *angle_format = "angle: %f";
+	char angle[100];
 	while (true) {
 		if(Hardware::master.get_digital_new_press(DIGITAL_X))
 		{
 			//pros::lcd::print(0, "%f", config::drive_pid_config.p);
-			
+
 			//Hardware::left_drive.moveAbsolute(5, 100);
 			while(!Hardware::drive_system.turn_degrees(90, .5))
 			{
-				pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
+				//pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
+				sprintf(angle, angle_format, Hardware::gyro.get());
+				//Hardware::master.set_text(1, 1, angle);
+				Hardware::master.print(1, 1, angle);
 				pros::delay(20);
 			}
-			
+
 		}
 
 		if(Hardware::master.get_digital(DIGITAL_B))
@@ -38,7 +43,10 @@ void opcontrol() {
 		double right = Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
 
 
-		pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
+		//pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
+
+		sprintf(angle, angle_format, Hardware::gyro.get());
+		Hardware::master.print(1, 1, angle);
 
 		if(Hardware::master.get_digital(DIGITAL_R2)){
 			Hardware::lift.raise(127);
