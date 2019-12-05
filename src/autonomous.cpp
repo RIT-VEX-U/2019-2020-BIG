@@ -63,29 +63,24 @@ void autonomous()
 
             break;
             case COLLECT_Q:
-              horiz_intake.run_intake(1, 0);
-              drive_system.drive_forward(5, 0.5);
-
               //Turn to be perpendicular w/ perimeter
-              drive_system.turn_degrees(-30, 0.5);
 
             break;
             case REVERSE1:
             // Begin reversing to drop off cubes
-              drive_system.drive_forward(-16, 0.75);
 
             break;
             case TURN3:
             // Turn towards scoring zone
-              drive_system.turn_degrees(115, 0.5);
+
             break;
             case DRIVE4:
             // Drive to scoring zone
-              drive_system.drive_forward(12, 0.75);
+
             break;
             case DROP1:
             // Drop off the 6 stack of cubes
-              
+
             break;
             case REVERSE_AWAY:
             // Reverse away from the stacked cubes to get credit for the drop
