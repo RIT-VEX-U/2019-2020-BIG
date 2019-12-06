@@ -4,8 +4,6 @@
 
 //using namespace pros;
 
-Motor Hardware::blank(30,false);
-
 okapi::ADIGyro Hardware::gyro(1, .1);
 
 pros::Motor Hardware::left_front(1, false);
