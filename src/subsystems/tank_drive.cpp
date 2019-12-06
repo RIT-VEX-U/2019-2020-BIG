@@ -10,7 +10,7 @@ motors input between -(min rpm) and +(max rpm) based on the gearset used.
 void TankDrive::drive(double left_in, double right_in)
 {
   double drive_mod = fabs(sin((left_in + right_in) * PI / 4.0));
-  
+
   double lf_out = left_in, lr_out = left_in;
   double rf_out = right_in, rr_out = right_in;
 
@@ -38,10 +38,11 @@ Will stop and return true after reaching the target.
 */
 bool TankDrive::drive_forward(double inches, double percent_speed)
 {
-  
+
   if(initialize_func == false)
   {
     //Reset the class timer, reset absolute position to 0 on startup.
+
     left_front.tare_position();
     drive_pid->reset();
     drive_pid->set_limits(-fabs(percent_speed), fabs(percent_speed));
@@ -75,9 +76,9 @@ bool TankDrive::turn_degrees(double degrees, double percent_speed)
   //Initialize the function, reset gyro and timers
   if(initialize_func == false)
   {
-    gyro->reset();
+    //gyro->reset();
 
-    turn_pid->reset();   
+    turn_pid->reset();
     turn_pid->set_limits(-fabs(percent_speed), fabs(percent_speed));
     turn_pid->set_target(degrees);
 

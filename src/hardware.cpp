@@ -2,7 +2,7 @@
 #include "api.h"
 #include "pros/apix.h"
 
-using namespace pros;
+//using namespace pros;
 
 Motor Hardware::blank(30,false);
 
@@ -28,10 +28,5 @@ Motor Hardware::liftRight(5,0);
 Motor Hardware::liftLeft(6,0);
 
 Motor Hardware::claw(7,0);
-
-// Vision hw::camera;
-
-
-
 
 Controller Hardware::master(E_CONTROLLER_MASTER);

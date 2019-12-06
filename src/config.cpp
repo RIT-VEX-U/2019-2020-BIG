@@ -12,7 +12,7 @@ void config::initialize()
     drive_pid_config.i = .000;
     drive_pid_config.d= .000;
     drive_pid_config.on_target_time = .3;
-    drive_pid_config.deadband = .1;  
+    drive_pid_config.deadband = .5;  
 
     // turn_degrees() config
     turn_pid_config.feedforward = 0;
