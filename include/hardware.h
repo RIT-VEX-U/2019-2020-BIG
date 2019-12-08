@@ -23,7 +23,10 @@ namespace Hardware
 
   extern TankDrive drive_system;
 
-  extern okapi::MotorGroup lift_motors;
+  extern okapi::Motor lift1;
+  extern okapi::Motor lift2;
+  extern okapi::Motor lift3;
+  extern okapi::Motor lift4;
 
   extern rd4Bar lift;
 
@@ -34,11 +37,9 @@ namespace Hardware
 
   extern Motor liftRight;
   extern Motor liftLeft;
-  extern Motor claw;
 
   // static Vision camera;
 
   extern Controller master;
-  extern Motor blank;
 };
 #endif

@@ -2,15 +2,19 @@
 #include "logging.hpp"
 #include "hardware.h"
 
-/**
-* Block all logic flow until the gyro is finished resetting
-*/
 void block_gyro_reset(){
 	Hardware::drive_system.drive(0, 0);
   Hardware::gyro.reset();
   //delay 1.5 seconds
   delay(1500);
 }
+
+//Encoder vals in rotations for different heights
+float lift_heights[] = {0.4, 0.8, 1.2, 1.6};
+int current_height = -1;
+
+int HEIGHT_MAX = sizeof(lift_heights) /*4*/;	//Will need to figure out why this isn't taking size
+
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -30,6 +34,7 @@ void opcontrol() {
 	char const *angle_format = "angle: %f";
 	char angle[100];
 	Hardware::master.clear();
+	
 	while (true) {
 		if(Hardware::master.get_digital_new_press(DIGITAL_X))
 		{
@@ -52,22 +57,54 @@ void opcontrol() {
 
 		double left = Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
 		double right = Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
-
+    	Hardware::drive_system.drive(left, right);
 
 		//pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
 
 		sprintf(angle, angle_format, Hardware::gyro.get());
 		Hardware::master.print(2, 1, angle);
 
-		if(Hardware::master.get_digital(DIGITAL_R2)){
-			Hardware::lift.raise(127);
-		}
-		else if(Hardware::master.get_digital(DIGITAL_R1)){
-			Hardware::lift.lower(127);
-		}
-		else if(Hardware::lift.isMoving()){
-			Hardware::lift.stop();
-		}
+    //All functionality for when lift is not holding a position
+    if(!Hardware::lift.is_holding()){
+        //manual raise & lower
+		    if(Hardware::master.get_digital(DIGITAL_R2) && !Hardware::lift.is_holding()){
+			       Hardware::lift.raise(100);
+		    }
+		    else if(Hardware::master.get_digital(DIGITAL_R1) && !Hardware::lift.is_holding()){
+			       Hardware::lift.lower(100);
+	      }
+		    else /*if(Hardware::lift.isMoving())*/{
+			       Hardware::lift.stop();
+		    }
+
+        //Starting lift holding
+        if(Hardware::master.get_digital(DIGITAL_L1)){
+          current_height++;
+          Hardware::lift.moveTo(lift_heights[current_height], true);
+        }
+
+    }
+
+    //All functionality for when the lift is holding a position
+    else{
+      if(Hardware::master.get_digital(DIGITAL_L1)){
+			     if(current_height < HEIGHT_MAX){
+                 Hardware::lift.moveTo(lift_heights[current_height++], true);
+			     }
+		  }
+		  else if(Hardware::master.get_digital(DIGITAL_L2)){
+		      if(current_height > 0){
+                Hardware::lift.moveTo(lift_heights[current_height--], true);
+			    }
+			    else{
+                //End lift hold
+				        Hardware::lift.release_hold();
+			    }
+		  }
+      //sprintf(position, position_format, fabs(Hardware::lift.getCurrPos()));
+      //Hardware::master.print(2, 1, position);
+      Hardware::lift.hold_pos();
+    }
 
 		Hardware::drive_system.drive(left, right);
 
@@ -75,8 +112,7 @@ void opcontrol() {
 
 		//Log all motors
 		//Hardware::drive_system.logDrive();
-		Hardware::lift.logLift();
-
+		//Hardware::lift.logLift();
 
 		pros::delay(53);
 	}
