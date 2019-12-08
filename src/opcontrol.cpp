@@ -20,12 +20,15 @@
  float lift_heights[] = {0.4, 0.8, 1.2, 1.6};
  int current_height = -1;
 
- int HEIGHT_MAX = /*lift_heights.size()*/ 4;	//Will need to figure out why this isn't taking size
+ int HEIGHT_MAX = sizeof(lift_heights) /*4*/;	//Will need to figure out why this isn't taking size
 
 void opcontrol() {
 	logging::clearLogFile();
-	//pros::lcd::set_text(1, "Hi, Shane!");
-	//pros::lcd::print(2, "Before if statement");
+
+  char const *position_format = "pos: %f";
+	char position[100];
+	Hardware::master.clear();
+
 	while (true) {
 		if(Hardware::master.get_digital_new_press(DIGITAL_X))
 		{
@@ -44,7 +47,7 @@ void opcontrol() {
 		double right = Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
     Hardware::drive_system.drive(left, right);
 
-		pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
+		//pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
 
     //All functionality for when lift is not holding a position
     if(!Hardware::lift.is_holding()){
@@ -71,18 +74,20 @@ void opcontrol() {
     else{
       if(Hardware::master.get_digital(DIGITAL_L1)){
 			     if(current_height < HEIGHT_MAX){
-				         current_height++;
+                 Hardware::lift.moveTo(lift_heights[current_height++], true);
 			     }
 		  }
 		  else if(Hardware::master.get_digital(DIGITAL_L2)){
-		      if(current_height - 1 > -1){
-				        current_height--;
+		      if(current_height > 0){
+                Hardware::lift.moveTo(lift_heights[current_height--], true);
 			    }
 			    else{
                 //End lift hold
 				        Hardware::lift.release_hold();
 			    }
 		  }
+      sprintf(position, position_format, fabs(Hardware::lift.getCurrPos()));
+      Hardware::master.print(2, 1, position);
       Hardware::lift.hold_pos();
     }
 
@@ -94,8 +99,6 @@ void opcontrol() {
 		//Hardware::drive_system.logDrive();
 		//Hardware::lift.logLift();
 
-		pros::lcd::print(1, "%f, %f, %f, %f", Hardware::lift1.getVoltage() * 100, Hardware::lift2.getVoltage(),
-																					Hardware::lift3.getVoltage(), Hardware::lift4.getVoltage());
 		pros::delay(20);
 	}
 }

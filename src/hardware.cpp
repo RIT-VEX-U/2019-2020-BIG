@@ -39,7 +39,7 @@ okapi::Motor Hardware::lift2(6);
 okapi::Motor Hardware::lift3(7);
 okapi::Motor Hardware::lift4(8);
 
-rd4Bar Hardware::lift({lift1, lift4}, {lift2, lift3}, -1);  //6 & 7 Reversed
+rd4Bar Hardware::lift({lift1, lift4}, {lift2, lift3}, 50);  //6 & 7 Reversed
 
 Motor Hardware::left_intake(9);
 Motor Hardware::right_intake(10);

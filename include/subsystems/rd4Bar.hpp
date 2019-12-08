@@ -47,35 +47,50 @@ public:
 
 //Raise/Lower the lift to a specified point and have it keep that poisition
   void moveTo(float encoderVal, bool hold){
+
+    //While it is too high, lower it
     while(fabs(lift_motors1.getPosition()) < encoderVal){
       lift_motors1.moveVelocity(-100);
       lift_motors2.moveVelocity(-100);
     }
 
+    //While it is too low, raise it
+    while(fabs(lift_motors1.getPosition()) < encoderVal){
+      lift_motors1.moveVelocity(100);
+      lift_motors2.moveVelocity(100);
+    }
+
+    //if the lift should maintain this position
     if(hold){
       holdingPos = encoderVal;
       hold_pos();
     }
+    else{
+      lift_motors1.moveVelocity(0);
+      lift_motors2.moveVelocity(0);
+    }
   }
 
   void hold_pos(){
-    if(lift_motors1.getPosition() > holdingPos || lift_motors2.getPosition() > holdingPos){
+    if(fabs(lift_motors1.getPosition()) < holdingPos - 0.05 || fabs(lift_motors2.getPosition()) < holdingPos - 0.05){
       //lift_motors1.moveVoltage(lift_motors1.getVoltage() - 1);
       //lift_motors2.moveVoltage(lift_motors2.getVoltage() - 1);
-      holdingPower++;
+      holdingPower -= 2;
     }
-    else if(lift_motors1.getPosition() < holdingPos || lift_motors2.getPosition() < holdingPos){
+    else if(fabs(lift_motors1.getPosition()) > holdingPos + 0.05 || fabs(lift_motors2.getPosition()) > holdingPos + 0.05){
       //lift_motors1.moveVoltage(lift_motors1.getVoltage() + 1);
       //lift_motors2.moveVoltage(lift_motors2.getVoltage() + 1);
-      holdingPower--;
+      holdingPower++;
     }
-    lift_motors1.moveVoltage(holdingPower);
-    lift_motors2.moveVoltage(holdingPower);
+    lift_motors1.moveVelocity(holdingPower);
+    lift_motors2.moveVelocity(holdingPower);
   }
 
   bool is_holding(){ return holdingPos > -1; }
 
   float getHoldingPos(){ return holdingPos; }
+
+  float getCurrPos(){ return lift_motors1.getPosition(); }
 
   void release_hold(){
     holdingPos = -1;
