@@ -37,6 +37,8 @@ void autonomous()
 
     while(true)
     {
+        pros::lcd::print(0, "Angle: %f", Hardware::gyro.get());
+        
         switch(auto_1_current)
         {
             case INIT:
@@ -57,7 +59,7 @@ void autonomous()
 
             Hardware::horiz_intake.run_intake(true, false);
 
-            if(Hardware::drive_system.drive_forward(drive_slow_speed, 22))
+            if(Hardware::drive_system.drive_forward(22, drive_slow_speed))
                 auto_1_current = TURN1;
 
             break;
@@ -122,6 +124,8 @@ void autonomous()
 
             return;
         }
+
+        pros::delay(20);
     }
     
 }

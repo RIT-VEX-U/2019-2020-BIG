@@ -35,10 +35,8 @@ void opcontrol() {
 		{
 			//pros::lcd::print(0, "%f", config::drive_pid_config.p);
 
-			block_gyro_reset();
-
 			//Hardware::left_drive.moveAbsolute(5, 100);
-			while(!Hardware::drive_system.turn_degrees(90, .5))
+			while(!Hardware::drive_system.turn_degrees(90, 1))
 			{
 				//pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
 				sprintf(angle, angle_format, Hardware::gyro.get());
