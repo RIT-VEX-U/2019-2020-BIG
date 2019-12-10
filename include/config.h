@@ -10,6 +10,8 @@ namespace config
     extern PID::config_t drive_pid_config;
     extern PID::config_t turn_pid_config;
 
+    extern PID::config_t lift_pid_config;
+
     void initialize();
 }
 

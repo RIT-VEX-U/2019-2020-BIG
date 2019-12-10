@@ -13,8 +13,14 @@ struct config_t
     double p = 0;
     double i = 0;
     double d = 0;
+
+    //constant being added
     double feedforward = 0;
+
+    //threshold, the range at which it will accept
     double deadband = 0;
+
+    //an amount of time it must stay on target to accept
     double on_target_time = 0;
 };
 
@@ -60,7 +66,7 @@ double get_error();
 void set_target(double target);
 
 /**
- * Set the limits on the PID out. The PID out will "clip" itself to be 
+ * Set the limits on the PID out. The PID out will "clip" itself to be
  * between the limits.
  */
 void set_limits(double lower, double upper);

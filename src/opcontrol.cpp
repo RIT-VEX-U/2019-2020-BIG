@@ -25,7 +25,7 @@
 void opcontrol() {
 	logging::clearLogFile();
 
-  char const *position_format = "pos: %f";
+  char const *position_format = "pos: %d";
 	char position[100];
 	Hardware::master.clear();
 
@@ -52,11 +52,11 @@ void opcontrol() {
     //All functionality for when lift is not holding a position
     if(!Hardware::lift.is_holding()){
         //manual raise & lower
-		    if(Hardware::master.get_digital(DIGITAL_R2) && !Hardware::lift.is_holding()){
-			       Hardware::lift.raise(100);
+		    if(Hardware::master.get_digital(DIGITAL_R2)){
+			       Hardware::lift.raise(12000);
 		    }
-		    else if(Hardware::master.get_digital(DIGITAL_R1) && !Hardware::lift.is_holding()){
-			       Hardware::lift.lower(100);
+		    else if(Hardware::master.get_digital(DIGITAL_R1)){
+			       Hardware::lift.lower(12000);
 	      }
 		    else /*if(Hardware::lift.isMoving())*/{
 			       Hardware::lift.stop();
@@ -65,8 +65,11 @@ void opcontrol() {
         //Starting lift holding
         if(Hardware::master.get_digital(DIGITAL_L1)){
           current_height++;
-          Hardware::lift.moveTo(lift_heights[current_height], true);
+          Hardware::lift.hold_pos(lift_heights[current_height]);
         }
+
+        sprintf(position, position_format, 1);
+        Hardware::master.print(2, 1, position);
 
     }
 
@@ -86,9 +89,9 @@ void opcontrol() {
 				        Hardware::lift.release_hold();
 			    }
 		  }
-      sprintf(position, position_format, fabs(Hardware::lift.getCurrPos()));
+      Hardware::lift.hold_pos(lift_heights[current_height]);
+      sprintf(position, position_format, 0);
       Hardware::master.print(2, 1, position);
-      Hardware::lift.hold_pos();
     }
 
 		Hardware::drive_system.drive(left, right);
