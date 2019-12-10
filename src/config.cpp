@@ -16,10 +16,10 @@ void config::initialize()
 
     // turn_degrees() config
     turn_pid_config.feedforward = 0;
-    turn_pid_config.p = .005;
-    turn_pid_config.i = .00001;
-    turn_pid_config.d = .00001;
-    turn_pid_config.deadband = .5;
+    turn_pid_config.p = .008;
+    turn_pid_config.i = .0000;
+    turn_pid_config.d = .0003;
+    turn_pid_config.deadband = .8;
     turn_pid_config.on_target_time = .3;
 
     //      Drive System Configuration

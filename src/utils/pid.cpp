@@ -35,7 +35,6 @@ void PID::update(double sensorVal)
     last_time = pros::c::millis() / 1000.0;
     last_error = get_error();
 
-    pros::lcd::print(0, "accum: %f", accum_error);
     out = (out < lower_limit) ? lower_limit : (out > upper_limit) ? upper_limit : out;
     
 }

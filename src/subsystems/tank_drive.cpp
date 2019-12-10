@@ -76,7 +76,7 @@ bool TankDrive::turn_degrees(double degrees, double percent_speed)
   //Initialize the function, reset gyro and timers
   if(initialize_func == false)
   {
-    //gyro->reset();
+    gyro->reset();
 
     turn_pid->reset();
     turn_pid->set_limits(-fabs(percent_speed), fabs(percent_speed));
