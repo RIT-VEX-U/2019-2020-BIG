@@ -27,7 +27,7 @@ void PID::update(double sensorVal)
     accum_error += time_delta * get_error();
     
 
-    out = (config->feedforward)
+    out = 0//(config->feedforward)
         + (config->p * get_error())
         + (config->i * accum_error)
         + (config->d * (get_error() - last_error) / time_delta);
@@ -35,7 +35,8 @@ void PID::update(double sensorVal)
     last_time = pros::c::millis() / 1000.0;
     last_error = get_error();
 
-    out = (out < lower_limit) ? lower_limit : (out > upper_limit) ? upper_limit : out;
+    if(lower_limit != 0 || upper_limit != 0)
+        out = (out < lower_limit) ? lower_limit : (out > upper_limit) ? upper_limit : out;
     
 }
 

@@ -32,10 +32,10 @@ Motor Hardware::right_rear(4, true);
 
 TankDrive Hardware::drive_system(Hardware::left_front, Hardware::right_front, Hardware::left_rear, Hardware::right_rear, pros::E_MOTOR_GEARSET_18, &Hardware::gyro, &config::drive_config, &config::drive_pid_config, &config::turn_pid_config);
 
-okapi::Motor Hardware::lift1(5);
-okapi::Motor Hardware::lift2(6);
-okapi::Motor Hardware::lift3(7);
-okapi::Motor Hardware::lift4(8);
+okapi::Motor Hardware::lift1(-10);
+okapi::Motor Hardware::lift2(-9);
+okapi::Motor Hardware::lift3(2);
+okapi::Motor Hardware::lift4(1);
 
 rd4Bar Hardware::lift({lift1, lift4}, {lift2, lift3}, 50);  //6 & 7 Reversed
 
