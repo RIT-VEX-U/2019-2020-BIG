@@ -12,7 +12,7 @@ public:
 
   //Constructor
   VerticalIntake(pros::Motor left, pros::Motor right, pros::Motor door):left(left), right(right), door(door){
-
+    
   }
 
   //suck in a cube
@@ -28,11 +28,9 @@ public:
   }
 
   //open the door of the intake
-  void open(){
-    while(door.get_position() < 0){ //!!! WILL NEED ADJUSTMENT
-      door.move(200);
-    }
-    door.move(0);
+  bool open(){
+    door.move(200);
+    return door.get_position() >= 0.05;
   }
 
   //close the door of the intake

@@ -62,11 +62,12 @@ void opcontrol() {
 		//Intake Door functionality
 		if(Hardware::master.get_digital(DIGITAL_A)){
 			Hardware::intake_door.move(100);
-			x = Hardware::vert_intake.getDoorPos();
 		}
 		else if(Hardware::master.get_digital(DIGITAL_Y)){
 			Hardware::intake_door.move(-100);
-			x = Hardware::vert_intake.getDoorPos();
+		}
+		else{
+			Hardware::intake_door.move(0);
 		}
 
 		if(Hardware::master.get_digital(DIGITAL_B))
@@ -124,6 +125,8 @@ void opcontrol() {
 		Hardware::drive_system.drive(left, right);
 
 		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_L2), Hardware::master.get_digital(DIGITAL_L1));
+
+		x = Hardware::vert_intake.getDoorPos();
 
 		//Log all motors
 		//Hardware::drive_system.logDrive();
