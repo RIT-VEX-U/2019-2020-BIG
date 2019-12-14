@@ -61,13 +61,10 @@ void opcontrol() {
 
 		//Intake Door functionality
 		if(Hardware::master.get_digital(DIGITAL_A)){
-			Hardware::intake_door.move(100);
+			Hardware::vert_intake.open();
 		}
 		else if(Hardware::master.get_digital(DIGITAL_Y)){
-			Hardware::intake_door.move(-100);
-		}
-		else{
-			Hardware::intake_door.move(0);
+			Hardware::vert_intake.close();
 		}
 
 		if(Hardware::master.get_digital(DIGITAL_B))

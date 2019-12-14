@@ -29,14 +29,14 @@ public:
 
   //open the door of the intake
   bool open(){
-    door.move(200);
-    return door.get_position() >= 0.05;
+    door.move_absolute(350, 200);
+    return fabs(350 - door.get_position()) < 10;
   }
 
   //close the door of the intake
   bool close(){
-    door.move(-75);
-    return door.get_position() <= 0.05;
+    door.move_absolute(0, 200);
+    return fabs(0 - door.get_position()) < 10;
   }
 
   int getDoorPos(){
