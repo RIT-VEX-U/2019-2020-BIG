@@ -20,7 +20,7 @@ public:
     int direction = (in_button == true) ? 1 : (out_button == true) ? -1 : 0;
 
     left.move_voltage(12000 * direction * motor_speed);
-    right.move_voltage(-12000 * direction * motor_speed);
+    right.move_voltage(12000 * direction * motor_speed);
 
   }
 

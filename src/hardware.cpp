@@ -30,7 +30,7 @@ pros::Motor Hardware::right_front(11, true);
 pros::Motor Hardware::left_rear(19, false);
 pros::Motor Hardware::right_rear(12, true);
 
-TankDrive Hardware::drive_system(Hardware::left_front, Hardware::right_front, Hardware::left_rear, Hardware::right_rear, pros::E_MOTOR_GEARSET_18, Hardware::gyro, &config::drive_config);
+TankDrive Hardware::drive_system(Hardware::left_front, Hardware::right_front, Hardware::left_rear, Hardware::right_rear, pros::E_MOTOR_GEARSET_18, &Hardware::gyro, &config::drive_config, &config::drive_pid_config, &config::turn_pid_config);
 
 okapi::Motor Hardware::lift1(9);
 okapi::Motor Hardware::lift2(10);

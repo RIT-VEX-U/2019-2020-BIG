@@ -28,20 +28,17 @@ namespace Hardware
   extern okapi::Motor lift3;
   extern okapi::Motor lift4;
 
-  extern okapi::MotorGroup lift_motors1;
-  extern okapi::MotorGroup lift_motors2;
-
   extern rd4Bar lift;
 
   extern Motor left_intake;
   extern Motor right_intake;
 
   extern HorizIntake horiz_intake;
-  extern Motor claw;
+
+  extern Motor
 
   // static Vision camera;
 
   extern Controller master;
-  extern Motor blank;
 };
 #endif
