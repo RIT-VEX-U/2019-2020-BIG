@@ -35,8 +35,7 @@ namespace Hardware
 
   extern HorizIntake horiz_intake;
 
-  extern Motor liftRight;
-  extern Motor liftLeft;
+  extern Motor
 
   // static Vision camera;
 
