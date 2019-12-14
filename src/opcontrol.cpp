@@ -20,12 +20,14 @@
  float lift_heights[] = {0.4, 0.8, 1.2, 1.6};
  int current_height = -1;
 
+ okapi::Timer timer;
+
  int HEIGHT_MAX = sizeof(lift_heights) /*4*/;	//Will need to figure out why this isn't taking size
 
 void opcontrol() {
 	logging::clearLogFile();
 
-  char const *position_format = "pos: %d";
+  char const *position_format = "pos: %d, time: %f";
 	char position[100];
 	Hardware::master.clear();
 
@@ -68,9 +70,6 @@ void opcontrol() {
           Hardware::lift.hold_pos(lift_heights[current_height]);
         }
 
-        sprintf(position, position_format, 1);
-        Hardware::master.print(2, 1, position);
-
     }
 
     //All functionality for when the lift is holding a position
@@ -90,9 +89,18 @@ void opcontrol() {
 			    }
 		  }
       Hardware::lift.hold_pos(lift_heights[current_height]);
-      sprintf(position, position_format, 0);
-      Hardware::master.print(2, 1, position);
     }
+
+		int x;
+		if(Hardware::lift.is_holding()){
+			x = 1;
+		}
+		else{
+			x = 0;
+		}
+		okapi::QTime t = timer.millis();
+		sprintf(position, position_format, x, t);
+		Hardware::master.print(2, 1, position);
 
 		Hardware::drive_system.drive(left, right);
 
@@ -102,6 +110,6 @@ void opcontrol() {
 		//Hardware::drive_system.logDrive();
 		//Hardware::lift.logLift();
 
-		pros::delay(20);
+		pros::delay(50);
 	}
 }
