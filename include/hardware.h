@@ -4,6 +4,7 @@
 #include "subsystems/tank_drive.hpp"
 #include "subsystems/rd4Bar.hpp"
 #include "subsystems/horiz_intake.hpp"
+#include "subsystems/vertical_intake.hpp"
 #include "pros/apix.h"
 #include "okapi/impl/device/motor/motorGroup.hpp"
 #include "okapi/impl/device/rotarysensor/adiGyro.hpp"
@@ -35,8 +36,11 @@ namespace Hardware
 
   extern HorizIntake horiz_intake;
 
-  extern Motor
+  extern Motor v_intake1;
+  extern Motor v_intake2;
+  extern Motor intake_door;
 
+  extern VerticalIntake vert_intake;
   // static Vision camera;
 
   extern Controller master;

@@ -7,6 +7,9 @@ private:
   pros::Motor left, right, door;
 
 public:
+  //
+  //enum door_pos{open = };
+
   //Constructor
   VerticalIntake(pros::Motor left, pros::Motor right, pros::Motor door):left(left), right(right), door(door){
 
@@ -33,11 +36,13 @@ public:
   }
 
   //close the door of the intake
-  void close(){
-    while(door.get_position() > 0){ //!!! WILL NEED ADJUSTMENT
-      door.move(-200);
-    }
-    door.move(0);
+  bool close(){
+    door.move(-75);
+    return door.get_position() <= 0.05;
+  }
+
+  int getDoorPos(){
+    return door.get_position();
   }
 
 };

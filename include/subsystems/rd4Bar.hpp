@@ -23,7 +23,7 @@ private:
 
 public:
 //Constructor
-  rd4Bar(okapi::MotorGroup lift_motors1, okapi::MotorGroup lift_motors2, int holdingPower, PID::config_t *lift_pid_config) : lift_motors1(lift_motors1), lift_motors2(lift_motors2), lift_pid(lift_pid){
+  rd4Bar(okapi::MotorGroup lift_motors1, okapi::MotorGroup lift_motors2, int holdingPower, PID::config_t *lift_pid_config) : lift_motors1(lift_motors1), lift_motors2(lift_motors2){
     this -> holdingPower = holdingPower;
     lift_pid = new PID(lift_pid_config);
     lift_motors2.setReversed(false);
@@ -78,12 +78,15 @@ public:
   }
 
   int hold_pos(float newHoldingPos){
-    holdingPos = newHoldingPos;
+    if(holdingPos != newHoldingPos){
+      holdingPos = newHoldingPos;
+    }
     lift_pid -> set_target(holdingPos);
     lift_pid -> update(lift_motors1.getPosition());
     int power = lift_pid -> get();
     lift_motors1.moveVoltage(power);
     lift_motors2.moveVoltage(power);
+    return power;
   }
 
   bool is_holding(){ return holdingPos > -1; }

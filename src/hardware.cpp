@@ -44,6 +44,10 @@ Motor Hardware::right_intake(4);
 
 HorizIntake Hardware::horiz_intake(Hardware::left_intake, Hardware::right_intake);
 
+Motor Hardware::v_intake1(5);
+Motor Hardware::v_intake2(6);
+Motor Hardware::intake_door(7);
 
+VerticalIntake Hardware::vert_intake(Hardware::v_intake1, Hardware::v_intake2, Hardware::intake_door);
 
 Controller Hardware::master(E_CONTROLLER_MASTER);

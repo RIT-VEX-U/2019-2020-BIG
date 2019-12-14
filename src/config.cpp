@@ -23,9 +23,9 @@ void config::initialize()
     turn_pid_config.deadband = .8;
     turn_pid_config.on_target_time = .3;
 
-    lift_pid_config.feedforward = 0;
-    lift_pid_config.p = 90000;
-    lift_pid_config.deadband = 0.05;
+    lift_pid_config.feedforward = 2000;
+    lift_pid_config.p = 30000;
+    lift_pid_config.deadband = 0.02;
     lift_pid_config.on_target_time = 0.3;
 
     //      Drive System Configuration
