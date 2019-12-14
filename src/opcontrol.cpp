@@ -42,6 +42,7 @@ void opcontrol() {
 	Hardware::master.clear();
 
 	while (true) {
+
 		if(Hardware::master.get_digital_new_press(DIGITAL_X))
 		{
 			//pros::lcd::print(0, "%f", config::drive_pid_config.p);
