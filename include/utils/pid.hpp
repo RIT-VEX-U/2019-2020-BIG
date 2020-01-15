@@ -36,8 +36,14 @@ public:
     double p = 0;
     double i = 0;
     double d = 0;
+
+    //constant being added
     double feedforward = 0;
+
+    //threshold, the range at which it will accept
     double deadband = 0;
+
+    //an amount of time it must stay on target to accept
     double on_target_time = 0;
   };
 

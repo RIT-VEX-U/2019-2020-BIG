@@ -3,6 +3,7 @@
 TankDrive::config_t config::drive_config = {};
 PID::config_t config::drive_pid_config = {};
 PID::config_t config::turn_pid_config = {};
+PID::config_t config::lift_pid_config = {};
 
 void config::initialize()
 {
@@ -12,7 +13,7 @@ void config::initialize()
     drive_pid_config.i = .000;
     drive_pid_config.d= .000;
     drive_pid_config.on_target_time = .3;
-    drive_pid_config.deadband = .5;  
+    drive_pid_config.deadband = .5;
 
     // turn_degrees() config
     turn_pid_config.feedforward = 0;
@@ -21,6 +22,11 @@ void config::initialize()
     turn_pid_config.d = .0003;
     turn_pid_config.deadband = .8;
     turn_pid_config.on_target_time = .3;
+
+    lift_pid_config.feedforward = 2000;
+    lift_pid_config.p = 30000;
+    lift_pid_config.deadband = 0.02;
+    lift_pid_config.on_target_time = 0.3;
 
     //      Drive System Configuration
     drive_config.wheel_size = 4;

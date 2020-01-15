@@ -6,14 +6,14 @@
 MOTOR PORTS:
 
 Tank Drive:
-  left: 1, 2
-  right: 3, 4
+  left: 20, 19
+  right: 11, 12
 
 Reverse Double 4 Bar:
-  left bottom: 5
-  left top: 6
-  right bottom: 7
-  right top: 8
+  left bottom: 9
+  left top: 10
+  right bottom: 1
+  right top: 2
 
 Intake:
   left: 9
@@ -37,15 +37,16 @@ okapi::Motor Hardware::lift2(9);
 okapi::Motor Hardware::lift3(-2);
 okapi::Motor Hardware::lift4(1);
 
-rd4Bar Hardware::lift({lift1, lift4}, {lift2, lift3}, 50);  //6 & 7 Reversed
+rd4Bar Hardware::lift({lift1, lift4}, {lift2, lift3}, 50, &config::lift_pid_config);  //6 & 7 Reversed
 
 Motor Hardware::left_intake(13);
 Motor Hardware::right_intake(14);
 
 HorizIntake Hardware::horiz_intake(Hardware::left_intake, Hardware::right_intake);
 
-Motor Hardware::liftRight(17,0);
-Motor Hardware::liftLeft(18,0);
+Motor Hardware::v_intake1(17,0);
+Motor Hardware::v_intake2(18,0);
 
+VerticalIntake Hardware::vert_intake(Hardware::v_intake1, Hardware::v_intake2, Hardware::intake_door);
 
 Controller Hardware::master(E_CONTROLLER_MASTER);
