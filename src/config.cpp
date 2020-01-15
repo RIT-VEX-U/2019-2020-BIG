@@ -16,7 +16,7 @@ void config::initialize()
 
     // turn_degrees() config
     turn_pid_config.feedforward = 0;
-    turn_pid_config.p = .008;
+    turn_pid_config.p = .01;
     turn_pid_config.i = .0000;
     turn_pid_config.d = .0003;
     turn_pid_config.deadband = .8;

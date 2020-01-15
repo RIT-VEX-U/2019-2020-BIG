@@ -37,6 +37,26 @@ void opcontrol() {
 
 	while (true) {
 
+    if(Hardware::master.get_digital(DIGITAL_A))
+    {
+      Hardware::liftLeft.move_voltage(6000);
+      Hardware::liftRight.move_voltage(-6000);
+    }else if(Hardware::master.get_digital(DIGITAL_B))
+    {
+      Hardware::liftLeft.move_voltage(-6000);
+      Hardware::liftRight.move_voltage(6000);
+    }else
+    {
+      Hardware::liftLeft.move_voltage(0);
+      Hardware::liftRight.move_voltage(0);
+    }
+
+    if(Hardware::master.get_digital(DIGITAL_Y))
+    {
+      
+    }
+
+
 		if(Hardware::master.get_digital_new_press(DIGITAL_X))
 		{
 			//pros::lcd::print(0, "%f", config::drive_pid_config.p);

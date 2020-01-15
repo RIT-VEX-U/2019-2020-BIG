@@ -25,27 +25,27 @@ using namespace pros;
 
 okapi::ADIGyro Hardware::gyro(1, .1);
 
-Motor Hardware::left_front(1, false);
-Motor Hardware::right_front(3, true);
-Motor Hardware::left_rear(2, false);
-Motor Hardware::right_rear(4, true);
+Motor Hardware::left_front(20, false);
+Motor Hardware::right_front(12, true);
+Motor Hardware::left_rear(19, false);
+Motor Hardware::right_rear(11, true);
 
 TankDrive Hardware::drive_system(Hardware::left_front, Hardware::right_front, Hardware::left_rear, Hardware::right_rear, pros::E_MOTOR_GEARSET_18, &Hardware::gyro, &config::drive_config, &config::drive_pid_config, &config::turn_pid_config);
 
 okapi::Motor Hardware::lift1(-10);
-okapi::Motor Hardware::lift2(-9);
-okapi::Motor Hardware::lift3(2);
+okapi::Motor Hardware::lift2(9);
+okapi::Motor Hardware::lift3(-2);
 okapi::Motor Hardware::lift4(1);
 
 rd4Bar Hardware::lift({lift1, lift4}, {lift2, lift3}, 50);  //6 & 7 Reversed
 
-Motor Hardware::left_intake(9);
-Motor Hardware::right_intake(10);
+Motor Hardware::left_intake(13);
+Motor Hardware::right_intake(14);
 
 HorizIntake Hardware::horiz_intake(Hardware::left_intake, Hardware::right_intake);
 
-Motor Hardware::liftRight(11,0);
-Motor Hardware::liftLeft(12,0);
+Motor Hardware::liftRight(17,0);
+Motor Hardware::liftLeft(18,0);
 
 
 Controller Hardware::master(E_CONTROLLER_MASTER);
