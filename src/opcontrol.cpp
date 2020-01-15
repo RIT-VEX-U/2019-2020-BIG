@@ -2,13 +2,13 @@
 #include "logging.hpp"
 #include "hardware.h"
 
-void block_gyro_reset(){
-	Hardware::drive_system.drive(0, 0);
+void block_gyro_reset()
+{
+  Hardware::drive_system.drive(0, 0);
   Hardware::gyro.reset();
   //delay 1.5 seconds
   delay(1500);
 }
-
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -24,131 +24,114 @@ void block_gyro_reset(){
  * task, not resume it from where it left off.
  */
 
- //Encoder vals in rotations for different heights
- float lift_heights[] = {0.4, 0.8, 1.2, 1.6};
- int current_height = -1;
+//Encoder vals in rotations for different heights
+float lift_heights[] = {0.4, 0.8, 1.2, 1.6};
+int current_height = -1;
 
- okapi::Timer timer;
+okapi::Timer timer;
 
- int HEIGHT_MAX = sizeof(lift_heights) /*4*/;	//Will need to figure out why this isn't taking size
+int HEIGHT_MAX = sizeof(lift_heights) /*4*/; //Will need to figure out why this isn't taking size
 
-void opcontrol() {
-	logging::clearLogFile();
+void opcontrol()
+{
+  logging::clearLogFile();
 
-	int x = 0;
+  int x = 0;
 
   char const *position_format = "pos: %d, time: %f";
-	char position[100];
-	Hardware::master.clear();
+  char position[100];
+  Hardware::master.clear();
 
-	while (true) {
+  while (true)
+  {
 
-    if(Hardware::master.get_digital(DIGITAL_A))
+    if (Hardware::master.get_digital(DIGITAL_A))
+      Hardware::vert_intake.takeIn();
+    else if (Hardware::master.get_digital(DIGITAL_B))
+      Hardware::vert_intake.drop();
+    else
     {
-      Hardware::liftLeft.move_voltage(6000);
-      Hardware::liftRight.move_voltage(-6000);
-    }else if(Hardware::master.get_digital(DIGITAL_B))
-    {
-      Hardware::liftLeft.move_voltage(-6000);
-      Hardware::liftRight.move_voltage(6000);
-    }else
-    {
-      Hardware::liftLeft.move_voltage(0);
-      Hardware::liftRight.move_voltage(0);
+      Hardware::v_intake1.move_voltage(0);
+      Hardware::v_intake2.move_voltage(0);
     }
 
-    if(Hardware::master.get_digital(DIGITAL_Y))
-    {
-      
-    }
+    //THIS IS TESTING CODE! DELETE WHEN DONE!
+    if (Hardware::master.get_digital(DIGITAL_X))
+      Hardware::vert_intake.open();
+      //Hardware::intake_door.move_voltage(6000);
+    else if (Hardware::master.get_digital(DIGITAL_Y))
+      Hardware::vert_intake.close();
+      //Hardware::intake_door.move_voltage(-6000);
+    //else
+    //  Hardware::intake_door.move_voltage(0);
 
-
-		if(Hardware::master.get_digital_new_press(DIGITAL_X))
-		{
-			//pros::lcd::print(0, "%f", config::drive_pid_config.p);
-
-			//Hardware::left_drive.moveAbsolute(5, 100);
-			/*while(!Hardware::drive_system.turn_degrees(90, 1))
-			{
-				//pros::lcd::print(1, "angle: %f", Hardware::gyro.get());
-				sprintf(angle, angle_format, Hardware::gyro.get());
-				//Hardware::master.set_text(1, 1, angle);
-				Hardware::master.print(2, 1, angle);
-				pros::delay(53);
-			}*/
-
-		}
-
-		//Intake Door functionality
-		if(Hardware::master.get_digital(DIGITAL_A)){
-			Hardware::vert_intake.open();
-		}
-		else if(Hardware::master.get_digital(DIGITAL_Y)){
-			Hardware::vert_intake.close();
-		}
-
-		if(Hardware::master.get_digital(DIGITAL_B))
-			Hardware::gyro.reset();
-
-		double left = Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
-		double right = Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
+    double left = Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
+    double right = Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
     Hardware::drive_system.drive(left, right);
 
     //All functionality for when lift is not holding a position
-    if(!Hardware::lift.is_holding()){
+    if (!Hardware::lift.is_holding())
+    {
 
-        //manual raise & lower
-		    if(Hardware::master.get_digital(DIGITAL_R2)){
-			       Hardware::lift.raise(12000);
-		    }
-		    else if(Hardware::master.get_digital(DIGITAL_R1)){
-			       Hardware::lift.lower(12000);
-	      }
-		    else /*if(Hardware::lift.isMoving())*/{
-			       Hardware::lift.stop();
-		    }
+      //manual raise & lower
+      if (Hardware::master.get_digital(DIGITAL_R2))
+      {
+        Hardware::lift.raise(12000);
+      }
+      else if (Hardware::master.get_digital(DIGITAL_R1))
+      {
+        Hardware::lift.lower(12000);
+      }
+      else /*if(Hardware::lift.isMoving())*/
+      {
+        Hardware::lift.stop();
+      }
 
-        //Starting lift holding
-        if(Hardware::master.get_digital(DIGITAL_L1)){
-          current_height++;
-          /*x = */Hardware::lift.hold_pos(lift_heights[current_height]);
-        }
-
+      //Starting lift holding
+      if (Hardware::master.get_digital(DIGITAL_L1))
+      {
+        current_height++;
+        /*x = */ Hardware::lift.hold_pos(lift_heights[current_height]);
+      }
     }
 
     //All functionality for when the lift is holding a position
-    else{
-      if(Hardware::master.get_digital(DIGITAL_L1)){
-			     if(current_height < HEIGHT_MAX){
-                 Hardware::lift.moveTo(lift_heights[current_height++], true);
-			     }
-		  }
-		  else if(Hardware::master.get_digital(DIGITAL_L2)){
-		      if(current_height > 0){
-                Hardware::lift.moveTo(lift_heights[current_height--], true);
-			    }
-			    else{
-                //End lift hold
-				        Hardware::lift.release_hold();
-			    }
-		  }
-      /*x = */Hardware::lift.hold_pos(lift_heights[current_height]);
+    else
+    {
+      if (Hardware::master.get_digital(DIGITAL_L1))
+      {
+        if (current_height < HEIGHT_MAX)
+        {
+          Hardware::lift.moveTo(lift_heights[current_height++], true);
+        }
+      }
+      else if (Hardware::master.get_digital(DIGITAL_L2))
+      {
+        if (current_height > 0)
+        {
+          Hardware::lift.moveTo(lift_heights[current_height--], true);
+        }
+        else
+        {
+          //End lift hold
+          Hardware::lift.release_hold();
+        }
+      }
+      /*x = */ Hardware::lift.hold_pos(lift_heights[current_height]);
     }
 
-		okapi::QTime t = timer.millis();
-		sprintf(position, position_format, x, t);
-		Hardware::master.print(2, 1, position);
+    okapi::QTime t = timer.millis();
+    sprintf(position, position_format, x, t);
+    Hardware::master.print(2, 1, position);
 
-		Hardware::drive_system.drive(left, right);
+    Hardware::drive_system.drive(left, right);
 
-		Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_L2), Hardware::master.get_digital(DIGITAL_L1));
+    //Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_L2), Hardware::master.get_digital(DIGITAL_L1));
 
-		x = Hardware::vert_intake.getDoorPos();
+    //Log all motors
+    //Hardware::drive_system.logDrive();
+    //Hardware::lift.logLift();
 
-		//Log all motors
-		//Hardware::drive_system.logDrive();
-		//Hardware::lift.logLift();
-
-		pros::delay(53);
-	}
+    pros::delay(53);
+  }
 }

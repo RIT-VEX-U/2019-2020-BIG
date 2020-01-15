@@ -15,21 +15,21 @@ public:
     
   }
 
-  //suck in a cube
+  //suck a cube
   void takeIn(){
     left.move(200);
-    right.move(200);
+    right.move(-200);
   }
 
   //drop a cube
   void drop(){
     left.move(-200);
-    right.move(-200);
+    right.move(200);
   }
 
   //open the door of the intake
   bool open(){
-    door.move_absolute(350, 200);
+    door.move_absolute(600, 200);
     return fabs(350 - door.get_position()) < 10;
   }
 
