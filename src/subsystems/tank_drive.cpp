@@ -30,6 +30,21 @@ void TankDrive::drive(double left_in, double right_in)
   right_rear.move_velocity(rr_out * gearset);
 }
 
+void TankDrive::arcade_drive(double left_y, double right_x)
+{
+  double left = left_y + right_x;
+  double right = left_y - right_x;
+
+  // Limit the output to between -1 and +1
+  double left_out = (left > 1) ? 1 : (left < -1) ? -1 : left;
+  double right_out = (right > 1) ? 1 : (right < -1) ? -1 : right;
+
+  left_front.move_velocity(left_out * gearset);
+  right_front.move_velocity(right_out * gearset);
+  left_rear.move_velocity(left_out * gearset);
+  right_rear.move_velocity(right_out * gearset);
+}
+
 /**
 Autonomously drive the robot x inches forward (or negative inches for reverse)
 at percent_speed (between 0.0 and 1.0).

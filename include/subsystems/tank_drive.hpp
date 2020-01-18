@@ -64,6 +64,14 @@ public:
   void drive(double left_in, double right_in);
 
   /**
+   * Drive the robot using arcade-style drive. The left Y axis controls forward/
+   * backward movement, the right X axis controls turning left or right. 
+   * 
+   * Inputs are "percentage", between -1.0 and +1.0
+   */
+  void arcade_drive(double left_y, double right_x);
+
+  /**
   Autonomously drive the robot x inches forward (or negative inches for reverse)
   at percent_speed (between 0.0 and 1.0).
 

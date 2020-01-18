@@ -29,7 +29,7 @@ public:
 
   //open the door of the intake
   bool open(){
-    door.move_absolute(600, 200);
+    door.move_absolute(-550, 200);
     return fabs(350 - door.get_position()) < 10;
   }
 

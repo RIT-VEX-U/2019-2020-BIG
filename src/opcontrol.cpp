@@ -45,6 +45,7 @@ void opcontrol()
   while (true)
   {
 
+    // Suck in / eject the cubes from the vertical intake
     if (Hardware::master.get_digital(DIGITAL_A))
       Hardware::vert_intake.takeIn();
     else if (Hardware::master.get_digital(DIGITAL_B))
@@ -55,23 +56,17 @@ void opcontrol()
       Hardware::v_intake2.move_voltage(0);
     }
 
-    //THIS IS TESTING CODE! DELETE WHEN DONE!
+    // Open / Close the intake doors
     if (Hardware::master.get_digital(DIGITAL_X))
       Hardware::vert_intake.open();
-      //Hardware::intake_door.move_voltage(6000);
     else if (Hardware::master.get_digital(DIGITAL_Y))
       Hardware::vert_intake.close();
-      //Hardware::intake_door.move_voltage(-6000);
-    //else
-    //  Hardware::intake_door.move_voltage(0);
 
-    double left = Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
-    double right = Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
-    Hardware::drive_system.drive(left, right);
+    Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_L1), Hardware::master.get_digital(DIGITAL_L2));
 
     //All functionality for when lift is not holding a position
-    if (!Hardware::lift.is_holding())
-    {
+    //if (!Hardware::lift.is_holding())
+    //{
 
       //manual raise & lower
       if (Hardware::master.get_digital(DIGITAL_R2))
@@ -86,15 +81,15 @@ void opcontrol()
       {
         Hardware::lift.stop();
       }
-
+    /*
       //Starting lift holding
       if (Hardware::master.get_digital(DIGITAL_L1))
       {
         current_height++;
-        /*x = */ Hardware::lift.hold_pos(lift_heights[current_height]);
+        Hardware::lift.hold_pos(lift_heights[current_height]);
       }
     }
-
+  
     //All functionality for when the lift is holding a position
     else
     {
@@ -117,14 +112,17 @@ void opcontrol()
           Hardware::lift.release_hold();
         }
       }
-      /*x = */ Hardware::lift.hold_pos(lift_heights[current_height]);
+      Hardware::lift.hold_pos(lift_heights[current_height]);
     }
-
+    */
     okapi::QTime t = timer.millis();
     sprintf(position, position_format, x, t);
     Hardware::master.print(2, 1, position);
 
-    Hardware::drive_system.drive(left, right);
+    double left = Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
+    double right = Hardware::master.get_analog(ANALOG_RIGHT_X) / 127.0;
+
+    Hardware::drive_system.arcade_drive(left, right);
 
     //Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_L2), Hardware::master.get_digital(DIGITAL_L1));
 
