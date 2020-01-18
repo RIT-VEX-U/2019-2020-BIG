@@ -80,10 +80,12 @@ public:
   int hold_pos(float newHoldingPos){
     if(holdingPos != newHoldingPos){
       holdingPos = newHoldingPos;
+      lift_pid->reset();
     }
-    lift_pid -> set_target(holdingPos);
+    lift_pid -> set_target(newHoldingPos);
     lift_pid -> update(lift_motors1.getPosition());
     int power = lift_pid -> get();
+    pros::lcd::print(0, "Error: %f", lift_pid->get_error());
     lift_motors1.moveVoltage(power);
     lift_motors2.moveVoltage(power);
     return power;
@@ -98,13 +100,6 @@ public:
   void release_hold(){
     holdingPos = -1;
   }
-
-  //void start_hold_pos(int pos){
-    //pros::Task hold_pos_task(void (*hold_pos)(int));
-  //}
-
-//  bool isDown(){
-//  }
 
   //Logging function
   void log_lift(){

@@ -44,5 +44,6 @@ namespace Hardware
   // static Vision camera;
 
   extern Controller master;
+  extern Controller partner;
 };
 #endif

@@ -27,7 +27,7 @@ void PID::update(double sensorVal)
     accum_error += time_delta * get_error();
     
 
-    out = 0//(config->feedforward)
+    out = (config->feedforward)
         + (config->p * get_error())
         + (config->i * accum_error)
         + (config->d * (get_error() - last_error) / time_delta);

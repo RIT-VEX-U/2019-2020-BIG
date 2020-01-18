@@ -25,12 +25,17 @@ void block_gyro_reset()
  */
 
 //Encoder vals in rotations for different heights
-float lift_heights[] = {0.4, 0.8, 1.2, 1.6};
-int current_height = -1;
+float lift_heights[] = {.2};
+float current_height = 0;
+
+float MAX_LIFT = 2.96;
+float MIN_LIFT = 0;
+int DELAY = 50;
+
 
 okapi::Timer timer;
 
-int HEIGHT_MAX = sizeof(lift_heights) /*4*/; //Will need to figure out why this isn't taking size
+//int HEIGHT_MAX = sizeof(lift_heights) /*4*/; //Will need to figure out why this isn't taking size
 
 void opcontrol()
 {
@@ -45,17 +50,6 @@ void opcontrol()
   while (true)
   {
 
-    // Suck in / eject the cubes from the vertical intake
-    if (Hardware::master.get_digital(DIGITAL_A))
-      Hardware::vert_intake.takeIn();
-    else if (Hardware::master.get_digital(DIGITAL_B))
-      Hardware::vert_intake.drop();
-    else
-    {
-      Hardware::v_intake1.move_voltage(0);
-      Hardware::v_intake2.move_voltage(0);
-    }
-
     // Open / Close the intake doors
     if (Hardware::master.get_digital(DIGITAL_X))
       Hardware::vert_intake.open();
@@ -69,18 +63,39 @@ void opcontrol()
     //{
 
       //manual raise & lower
-      if (Hardware::master.get_digital(DIGITAL_R2))
+      double lift_pos = Hardware::lift.getCurrPos();
+      if(Hardware::master.get_digital(DIGITAL_B))
+      {
+        if(lift_pos > MIN_LIFT)
+          Hardware::lift.lower(6000);
+        else
+          Hardware::lift.stop();
+
+        Hardware::vert_intake.takeIn();
+      }else if (lift_pos < lift_heights[0] - .01)
+      {
+        current_height = lift_heights[0];
+        Hardware::vert_intake.stop_intake();
+      }else
+      {
+        Hardware::vert_intake.stop_intake();
+      }
+
+      if (Hardware::master.get_analog(ANALOG_LEFT_Y) > 100 && lift_pos <= MAX_LIFT)
       {
         Hardware::lift.raise(12000);
+        current_height = lift_pos;
       }
-      else if (Hardware::master.get_digital(DIGITAL_R1))
+      else if (Hardware::master.get_analog(ANALOG_LEFT_Y) < -100 && lift_pos >= MIN_LIFT)
       {
-        Hardware::lift.lower(12000);
+        Hardware::lift.raise(-8000);
+        current_height = lift_pos;
       }
-      else /*if(Hardware::lift.isMoving())*/
+      else if (!Hardware::master.get_digital(DIGITAL_B))
       {
-        Hardware::lift.stop();
+        Hardware::lift.hold_pos(current_height);
       }
+      //pros::lcd::print(0, "lift: %f", Hardware::lift.getCurrPos());
     /*
       //Starting lift holding
       if (Hardware::master.get_digital(DIGITAL_L1))
@@ -122,7 +137,7 @@ void opcontrol()
     double left = Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
     double right = Hardware::master.get_analog(ANALOG_RIGHT_X) / 127.0;
 
-    Hardware::drive_system.arcade_drive(left, right);
+    //Hardware::drive_system.arcade_drive(left, right);
 
     //Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_L2), Hardware::master.get_digital(DIGITAL_L1));
 
@@ -130,6 +145,6 @@ void opcontrol()
     //Hardware::drive_system.logDrive();
     //Hardware::lift.logLift();
 
-    pros::delay(53);
+    pros::delay(DELAY);
   }
 }

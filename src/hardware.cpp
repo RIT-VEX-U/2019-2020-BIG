@@ -52,3 +52,4 @@ Motor Hardware::intake_door(16,0);
 VerticalIntake Hardware::vert_intake(Hardware::v_intake1, Hardware::v_intake2, Hardware::intake_door);
 
 Controller Hardware::master(E_CONTROLLER_MASTER);
+Controller Hardware::partner(E_CONTROLLER_PARTNER);
