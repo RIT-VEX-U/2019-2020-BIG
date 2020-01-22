@@ -34,10 +34,25 @@ public:
     right.move_velocity(0);
   }
 
+  int open_pos = -550;
+  int close_pos = 0;
+
   //open the door of the intake
   bool open(){
-    door.move_absolute(-550, 200);
-    return fabs(350 - door.get_position()) < 10;
+    door.move_absolute(open_pos, 200);
+    return fabs(open_pos - door.get_position()) < 10;
+  }
+
+  // Returns whether or not the door is open
+  bool is_open()
+  {
+    return fabs(open_pos - door.get_position()) < 10;
+  }
+
+  // Returns whether or not the door is closed
+  bool is_closed()
+  {
+    return fabs(close_pos - door.get_position()) < 10;
   }
 
   //close the door of the intake
