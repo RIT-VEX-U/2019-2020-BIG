@@ -1,3 +1,10 @@
+/**
+* Purpose: Includes all the functionality for a reverse
+*   double four bar
+* Usage: include the hardware file where the lift
+    is declared, Hardware::[name of rd4Bar].[function]
+* @author Dana Colletti
+*/
 #ifndef _RD_4_BAR_
 #define _RD_4_BAR_
 #include "okapi/impl/device/motor/motorGroup.hpp"
@@ -7,17 +14,18 @@
 class rd4Bar{
 
 private:
-  //Two MotorGroups
+  //All lift motors, grouped by the direction they spin
   okapi::MotorGroup lift_motors1;
   okapi::MotorGroup lift_motors2;
 
+  //Pointer to the
   PID *lift_pid;
 
   //Position it is currently holding, -1 if none
   float holdingPos = 1;
 
-  //The minimum motor velocity needed to hold the lift in a certain position
-  int holdingPower;  //This is a guess, will need to be adjusted
+  //The motor velocity needed to hold the lift in a certain position
+  int holdingPower;
 
 
 
