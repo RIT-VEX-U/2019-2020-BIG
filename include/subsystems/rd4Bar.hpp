@@ -1,3 +1,10 @@
+/**
+* Purpose: Includes all the functionality for a reverse
+*   double four bar
+* Usage: include the hardware file where the lift
+    is declared, Hardware::[name of rd4Bar].[function]
+* @author Dana Colletti
+*/
 #ifndef _RD_4_BAR_
 #define _RD_4_BAR_
 #include "okapi/impl/device/motor/motorGroup.hpp"
@@ -7,17 +14,18 @@
 class rd4Bar{
 
 private:
-  //Two MotorGroups
+  //All lift motors, grouped by the direction they spin
   okapi::MotorGroup lift_motors1;
   okapi::MotorGroup lift_motors2;
 
+  //Pointer to the pid that is responsible for maintaining lift positions
   PID *lift_pid;
 
   //Position it is currently holding, -1 if none
   float holdingPos = 1;
 
-  //The minimum motor velocity needed to hold the lift in a certain position
-  int holdingPower;  //This is a guess, will need to be adjusted
+  //The motor velocity needed to hold the lift in a certain position
+  int holdingPower;
 
 
 
@@ -53,7 +61,6 @@ public:
 
 //Raise/Lower the lift to a specified point and have it keep that poisition
   void moveTo(float encoderVal, bool hold){
-
     //While it is too high, lower it
     while(fabs(lift_motors1.getPosition()) > encoderVal){
       lift_motors1.moveVoltage(12000);
@@ -77,6 +84,7 @@ public:
     }
   }
 
+  //Use the pid to make the lift maintain a certain position
   int hold_pos(float newHoldingPos){
     if(holdingPos != newHoldingPos){
       holdingPos = newHoldingPos;
@@ -91,12 +99,16 @@ public:
     return power;
   }
 
+  //Checks if the lift has an assigned value to hold
   bool is_holding(){ return holdingPos > -1; }
 
+  //Return the lift's assigned position to hold
   float getHoldingPos(){ return holdingPos; }
 
+  //Return the current encoder value of the lift
   float getCurrPos(){ return lift_motors1.getPosition(); }
 
+  //CLear assigned position to hold
   void release_hold(){
     holdingPos = -1;
   }

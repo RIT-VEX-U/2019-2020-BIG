@@ -40,6 +40,24 @@ float drive_speed = .5;
 float drive_slow_speed = .2;
 float turn_speed = 1;
 
+void pick_up(){
+  //Position the robot so that the cube is ready to be sucked up
+  while(!Hardware::limit_switch.get_value()){
+    Hardware::lift.hold_pos(0.2);
+    //Check if the door needs to be opened
+    if(Hardware::vert_intake.is_closed()){
+      Hardware::vert_intake.open();
+    }
+    //Drive until cube sets off limit switch
+    Hardware::drive_system.drive(50, 50);
+  }
+
+  //Drop lift, run intake to suck cube up
+  while(Hardware::limit_switch.get_value()){
+    Hardware::vert_intake.takeIn();
+  }
+}
+
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
