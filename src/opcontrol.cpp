@@ -11,6 +11,7 @@ void block_gyro_reset()
 }
 
 int drop_stack_state = 0;
+uint32_t drop_stack_timer = 0;
 
 bool drop_stack()
 {
@@ -18,20 +19,31 @@ bool drop_stack()
   {
   // Step one: lower the lift
   case 0:
-    if (fabs(Hardware::lift.getCurrPos()) < 10)
+    if (fabs(Hardware::lift.getCurrPos()) < .05)
     {
       Hardware::lift.stop();
       Hardware::horiz_intake.run_intake(false, false);
       drop_stack_state++;
+      drop_stack_timer = pros::millis();
       break;
     }
     // Reverse the horizontal intake to get the wheels out of the way
     Hardware::horiz_intake.run_intake(false, true);
     Hardware::lift.lower(2000);
     break;
-
-  //Step two: open the door
+  // step 2: Run the vertical intake wheels in reverse for 300 milliseconds
   case 1:
+    if(pros::millis() - drop_stack_timer > 300)
+    {
+      Hardware::vert_intake.stop_intake();
+      drop_stack_state++;
+      break;
+    }
+    Hardware::vert_intake.drop();
+  break;
+
+  //Step three: open the door
+  case 2:
     if (Hardware::vert_intake.is_open())
     {
       drop_stack_state = 0;
@@ -43,6 +55,8 @@ bool drop_stack()
     // Should never get here, but reset the state just in case.
     drop_stack_state = 0;
   }
+
+  return false;
 }
 
 /**
@@ -82,11 +96,12 @@ void opcontrol()
   char const *position_format = "pos: %d, time: %f";
   char position[100];
   Hardware::master.clear();
+  Hardware::intake_door.move_absolute(0, 200);
 
   while (true)
   {
     // If A is pressed, then start the "drop the stack" semi-auto function.
-    if(Hardware::master.get_digital_new_press(DIGITAL_A))
+    if (Hardware::master.get_digital_new_press(DIGITAL_A))
     {
       drop_stack_state = 0;
       drop_stack_btn = true;
@@ -94,15 +109,15 @@ void opcontrol()
 
     // Stop the "drop the stack" function if the lift is being moved manually
     if (drop_stack_btn)
-      if (drop_stack() || fabs(Hardware::master.get_analog(ANALOG_LEFT_Y)) > 20 || Hardware::master.get_digital(DIGITAL_B))
+      if (drop_stack() || fabs(Hardware::master.get_analog(ANALOG_LEFT_Y)) > 50 || Hardware::master.get_digital(DIGITAL_B))
         drop_stack_btn = false;
 
     // Open / Close the intake doors with one button press
     if (Hardware::master.get_digital_new_press(DIGITAL_X))
-      if (Hardware::vert_intake.is_open())
-        Hardware::vert_intake.close();
-      else if (Hardware::vert_intake.is_closed())
+      if (Hardware::vert_intake.is_closed())
         Hardware::vert_intake.open();
+      else
+        Hardware::vert_intake.close();
 
     Hardware::horiz_intake.run_intake(Hardware::master.get_digital(DIGITAL_L1) || Hardware::master.get_digital(DIGITAL_L2),
                                       Hardware::master.get_digital(DIGITAL_R1) || Hardware::master.get_digital(DIGITAL_R2));
