@@ -6,24 +6,35 @@
 MOTOR PORTS:
 
 Tank Drive:
-  left: 20, 19
-  right: 11, 12
+  left Front: 20
+  Left Back: 19
+  Right Front: 11, reversed
+  Right Back: 12, reversed
 
 Reverse Double 4 Bar:
   left bottom: 9
-  left top: 10
+  left top: 10, reversed
   right bottom: 1
-  right top: 2
+  right top: 2, reversed
 
 Intake:
-  left: 9
-  right: 10
+  Horizontal left: 13
+  Horizontal right: 14
 
+  Vertical: 17, 18
+  Door: 16
+
+SENSOR PORTS:
+
+Gyro: 1
+Limit Switch: H
 */
 
 using namespace pros;
 
 okapi::ADIGyro Hardware::gyro(1, .1);
+
+ADIButton Hardware::limit_switch('H');
 
 Motor Hardware::left_front(20, false);
 Motor Hardware::right_front(12, true);

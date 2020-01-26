@@ -2,14 +2,6 @@
 #include "logging.hpp"
 #include "hardware.h"
 
-void block_gyro_reset()
-{
-  Hardware::drive_system.drive(0, 0);
-  Hardware::gyro.reset();
-  //delay 1.5 seconds
-  delay(1500);
-}
-
 int drop_stack_state = 0;
 uint32_t drop_stack_timer = 0;
 

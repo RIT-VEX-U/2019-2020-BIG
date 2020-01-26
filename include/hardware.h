@@ -15,6 +15,8 @@ using namespace pros;
 namespace Hardware
 {
 
+  extern pros::ADIButton limit_switch;
+
   extern pros::Motor left_front;
   extern pros::Motor right_front;
   extern pros::Motor left_rear;
