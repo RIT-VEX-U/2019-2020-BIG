@@ -53,6 +53,7 @@ void autonomous()
 		{
 		case INIT:
 			// Inititalize / calibrate period
+      Hardware::lift.hold_pos(.8);
 
 			auto_1_current = DRIVE1;
 			break;
@@ -82,7 +83,7 @@ void autonomous()
 		case DRIVE2:
 			// Drive to complete a lateral translation towards Q
 
-			if (Hardware::drive_system.drive_forward(11.5, drive_speed))
+			if (Hardware::drive_system.drive_forward(8, drive_speed))
 				auto_1_current = TURN2;
 
 			break;
@@ -110,6 +111,7 @@ void autonomous()
 			break;
 		case TURN3:
 			// Turn towards scoring zone
+      Hardware::horiz_intake.run_intake(false, false);
 
 			if (Hardware::drive_system.turn_degrees(color * -135, turn_speed))
 				auto_1_current = DRIVE3;
