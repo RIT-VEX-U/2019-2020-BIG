@@ -107,6 +107,7 @@ bool TankDrive::turn_degrees(double degrees, double percent_speed)
   if(turn_pid->is_on_target())
   {
     initialize_func = false;
+    drive(0,0);
     return true;
   }
   return false;

@@ -17,17 +17,17 @@ void config::initialize()
 
     // turn_degrees() config
     turn_pid_config.feedforward = 0;
-    turn_pid_config.p = .02;
-    turn_pid_config.i = .0000;
-    turn_pid_config.d = .0003;
-    turn_pid_config.deadband = .8;
-    turn_pid_config.on_target_time = .3;
+    turn_pid_config.p = .035;
+    turn_pid_config.i = .000;
+    turn_pid_config.d = .0045;
+    turn_pid_config.deadband = 3;
+    turn_pid_config.on_target_time = .1;
 
     lift_pid_config.feedforward = 4000;
     lift_pid_config.p = 4000;
     //lift_pid_config.i = 40;
     lift_pid_config.deadband = 0.02;
-    lift_pid_config.on_target_time = 0.3;
+    lift_pid_config.on_target_time = 0.1;
 
     //      Drive System Configuration
     drive_config.wheel_size = 4;

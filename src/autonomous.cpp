@@ -14,9 +14,10 @@ enum AUTO_1_STATE
 	COLLECT_AO,
 	TURN1,
 	DRIVE2,
+  REVERSE1,
 	TURN2,
 	COLLECT_Q,
-	REVERSE1,
+	REVERSE2,
 	TURN3,
 	DRIVE3,
 	DROP1,
@@ -27,9 +28,17 @@ enum AUTO_1_STATE
 AUTO_1_STATE auto_1_current = INIT;
 AUTO_COLOR color = BLUE;
 
+enum AUTO_LIFT_STATE
+{
+  RAISE, LOWER, HOLD
+};
+
+AUTO_LIFT_STATE auto_lift_current = HOLD;
+float auto_lift_hold_pos = 0;
+
 float drive_speed = .5;
 float drive_slow_speed = .2;
-float turn_speed = .5;
+float turn_speed = 1;
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -47,13 +56,45 @@ void autonomous()
 
 	while (true)
 	{
+
+    // State machine that controls the lift parallel to the main program.
+    // Allows the lift to hold it's "state" between main automous states. For example,
+    // if the lift is raising when the main program changes states, it will continue raising
+    // into the next main program state.
+    switch(auto_lift_current)
+    {
+      // Only raise if it has not reached it's max height
+      case RAISE:
+        if(Hardware::lift.getCurrPos() < 2.96)
+          Hardware::lift.raise(12000);
+        else
+          Hardware::lift.stop();
+      break;
+
+      case LOWER:
+        // Only lower if it has not reached it's min height
+        if(Hardware::lift.getCurrPos() > 0)
+          Hardware::lift.lower(6000);
+        else
+          Hardware::lift.stop();
+      break;
+
+      // Hold the lift where it is using the PID loop
+      default:
+      case HOLD:
+        Hardware::lift.hold_pos(auto_lift_hold_pos);
+      break;
+    }
+
 		pros::lcd::print(0, "Angle: %f", Hardware::gyro.get());
 
+    // The main autonomous program.
 		switch (auto_1_current)
 		{
 		case INIT:
 			// Inititalize / calibrate period
-      Hardware::lift.hold_pos(.8);
+      auto_lift_hold_pos = .2;
+      auto_lift_current = HOLD;
 
 			auto_1_current = DRIVE1;
 			break;
@@ -76,21 +117,7 @@ void autonomous()
 		case TURN1:
 			// Turn towards the Q group of cubes
 			Hardware::horiz_intake.run_intake(false, false);
-			if (Hardware::drive_system.turn_degrees(color * 60, turn_speed))
-				auto_1_current = DRIVE2;
-
-			break;
-		case DRIVE2:
-			// Drive to complete a lateral translation towards Q
-
-			if (Hardware::drive_system.drive_forward(8, drive_speed))
-				auto_1_current = TURN2;
-
-			break;
-		case TURN2:
-			// Turn again to complete the 2 point turn
-
-			if (Hardware::drive_system.turn_degrees(color * -60, turn_speed))
+			if (Hardware::drive_system.turn_degrees(color * 15, turn_speed))
 				auto_1_current = COLLECT_Q;
 
 			break;
@@ -98,14 +125,27 @@ void autonomous()
 			// Collect the single Q cube
 
 			Hardware::horiz_intake.run_intake(true, false);
-			if (Hardware::drive_system.drive_forward(3, drive_slow_speed))
+			if (Hardware::drive_system.drive_forward(1, drive_slow_speed))
 				auto_1_current = REVERSE1;
 
 			break;
-		case REVERSE1:
+    case REVERSE1:
+      Hardware::horiz_intake.run_intake(false,false);
+      if(Hardware::drive_system.drive_forward(-14, drive_speed))
+      {
+        auto_1_current = TURN2;
+      }
+    break;
+    case TURN2:
+      if(Hardware::drive_system.turn_degrees(-15, turn_speed))
+      {
+        auto_1_current = REVERSE2;
+      }
+      break;
+		case REVERSE2:
 			// Begin reversing to drop off cubes
 
-			if (Hardware::drive_system.drive_forward(-32, drive_speed))
+			if (Hardware::drive_system.drive_forward(-15, drive_speed))
 				auto_1_current = TURN3;
 
 			break;
@@ -113,7 +153,7 @@ void autonomous()
 			// Turn towards scoring zone
       Hardware::horiz_intake.run_intake(false, false);
 
-			if (Hardware::drive_system.turn_degrees(color * -135, turn_speed))
+			if (Hardware::drive_system.turn_degrees(color * -150, turn_speed))
 				auto_1_current = DRIVE3;
 
 			break;

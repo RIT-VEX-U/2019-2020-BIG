@@ -17,14 +17,14 @@ public:
 
   //suck a cube
   void takeIn(){
-    left.move(-100);
-    right.move(100);
+    left.move(100);
+    right.move(-100);
   }
 
   //drop a cube
   void drop(){
-    left.move(100);
-    right.move(-100);
+    left.move(-100);
+    right.move(100);
   }
 
   // Keep the intake at 0 RPM
