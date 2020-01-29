@@ -28,6 +28,8 @@ SENSOR PORTS:
 
 Gyro: 1
 Limit Switch: H
+Right Bottom Button: G
+Left Bottom Button: F
 */
 
 using namespace pros;
@@ -35,6 +37,9 @@ using namespace pros;
 okapi::ADIGyro Hardware::gyro(1, .1);
 
 ADIButton Hardware::limit_switch('H');
+
+ADIButton Hardware::right_button('G');
+ADIButton Hardware::left_button('F');
 
 Motor Hardware::left_front(20, false);
 Motor Hardware::right_front(12, true);
