@@ -2,6 +2,7 @@
 #include "logging.hpp"
 #include "hardware.h"
 
+
 int drop_stack_state = 0;
 uint32_t drop_stack_timer = 0;
 
@@ -16,6 +17,16 @@ float MIN_LIFT = 0.2;
 // For setting the default state to either "down" or "just above cube"
 bool last_action_b_button = false;
 
+/**
+ * State machine for the sequence of events required for dropping off a stack of cubes in the scoring zone:
+ * 1. Lower the lift to MIN_LIFT height, while running the horizontal intake wheels in reverse to get them out of the way
+ * 2. Run the vertical intake wheels in reverse for a set amount of time to place the cubes on the ground
+ * 3. Open the pod bay doors (sorry dave)
+ * 
+ * This is a non-blocking function, and will return true when the sequence has finished, and false otherwise.
+ * Make sure when calling this function, the horizontal and vertical intake / lift / doors are not accessed, or
+ * chaos may ensue.
+ */
 bool drop_stack()
 {
   switch (drop_stack_state)
@@ -60,21 +71,7 @@ bool drop_stack()
   }
 
   return false;
-}
-
-/**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
- *
- * If no competition control is connected, this function will run immediately
- * following initialize().
- *
- * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
- */
+} // end drop_stack()
 
 int DELAY = 50;
 
@@ -83,9 +80,28 @@ okapi::Timer timer;
 //int HEIGHT_MAX = sizeof(lift_heights) /*4*/; //Will need to figure out why this isn't taking size
 
 bool drop_stack_btn = false;
-
 bool test_turn = false;
 
+/**
+ * function opcontrol()
+ * 
+ * Code run when an operator is controlling the robot.
+ * OpControl initialization takes place before the while loop.
+ * 
+ * Driver Controls:
+ * 
+ * "Master" Remote:
+ *    -Drive control (Arcade):
+ *      LeftY: Forward / Backward
+ *      RightX: Left / Right
+ *    -Drive control (Tank):
+ *      LeftY: Directly controls "left" wheels
+ *      RightY: Directly controls "right" wheels
+ * 
+ * "Partner" Remote:
+ *    
+ *  
+ */
 void opcontrol()
 {
   logging::clearLogFile();
@@ -99,21 +115,22 @@ void opcontrol()
 
   while (true)
   {
-    
-    if(Hardware::master.get_digital(DIGITAL_A))
+    /*
+    if (Hardware::master.get_digital(DIGITAL_A))
       test_turn = true;
 
-    if(test_turn)
+    if (test_turn)
     {
-      if(Hardware::drive_system.turn_degrees(90, 1) || Hardware::master.get_digital(DIGITAL_B))
+      if (Hardware::drive_system.turn_degrees(90, 1) || Hardware::master.get_digital(DIGITAL_B))
         test_turn = false;
-    }else
-      Hardware::drive_system.drive(0,0);
+    }
+    else
+      Hardware::drive_system.drive(0, 0);
 
     pros::delay(50);
 
     continue;
-  
+    */
     // If A is pressed, then start the "drop the stack" semi-auto function.
     if (Hardware::partner.get_digital_new_press(DIGITAL_A))
     {
@@ -131,7 +148,7 @@ void opcontrol()
       if (Hardware::vert_intake.is_closed())
         Hardware::vert_intake.open();
       else
-        Hardware::vert_intake.close();      
+        Hardware::vert_intake.close();
 
     // "Default states" for the lift:
     // If the user presses B, lower the lift while running the vert intake,
@@ -179,7 +196,7 @@ void opcontrol()
         current_height = lift_pos;
       }
       // If the B button or analog stick are not being used, hold the lift via PID
-      else if(!Hardware::partner.get_digital(DIGITAL_B) && !last_action_b_button && lift_pos <= MIN_LIFT)
+      else if (!Hardware::partner.get_digital(DIGITAL_B) && !last_action_b_button && lift_pos <= MIN_LIFT)
       {
         Hardware::lift.stop();
       }

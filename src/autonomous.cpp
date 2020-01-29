@@ -3,26 +3,26 @@
 
 enum AUTO_COLOR
 {
-	BLUE = 1,
-	RED = -1
+  BLUE = 1,
+  RED = -1
 };
 
 enum AUTO_1_STATE
 {
-	INIT,
-	DRIVE1,
-	COLLECT_AO,
-	TURN1,
-	DRIVE2,
+  INIT,
+  DRIVE1,
+  COLLECT_AO,
+  TURN1,
+  DRIVE2,
   REVERSE1,
-	TURN2,
-	COLLECT_Q,
-	REVERSE2,
-	TURN3,
-	DRIVE3,
-	DROP1,
-	REVERSE_AWAY,
-	END
+  TURN2,
+  COLLECT_Q,
+  REVERSE2,
+  TURN3,
+  DRIVE3,
+  DROP1,
+  REVERSE_AWAY,
+  END
 };
 
 AUTO_1_STATE auto_1_current = INIT;
@@ -30,33 +30,61 @@ AUTO_COLOR color = BLUE;
 
 enum AUTO_LIFT_STATE
 {
-  RAISE, LOWER, HOLD
+  RAISE,
+  LOWER,
+  HOLD
 };
 
 AUTO_LIFT_STATE auto_lift_current = HOLD;
 float auto_lift_hold_pos = 0;
 
 float drive_speed = .5;
-float drive_slow_speed = .2;
+float drive_slow_speed = .15;
 float turn_speed = 1;
+bool done_picking_up = false;
 
-void pick_up(){
+uint32_t pick_up_vert_intake_time = 0;
+
+void pick_up()
+{
+  if(done_picking_up == true)
+  {
+    if (Hardware::lift.getCurrPos() >= .1)
+      Hardware::lift.lower(6000);
+    else
+      Hardware::lift.stop();
+
+    Hardware::vert_intake.stop_intake();
+    return;
+  }
+
   //Position the robot so that the cube is ready to be sucked up
-  while(!Hardware::limit_switch.get_value()){
+  if (!Hardware::limit_switch.get_value())
+  {
     Hardware::lift.hold_pos(0.2);
-    //Check if the door needs to be opened
-    if(Hardware::vert_intake.is_closed()){
-      Hardware::vert_intake.open();
-    }
-    //Drive until cube sets off limit switch
-    Hardware::drive_system.drive(50, 50);
+    if (pros::millis() - pick_up_vert_intake_time < 500)
+      Hardware::vert_intake.takeIn();
+    else
+      Hardware::vert_intake.stop_intake();
   }
 
   //Drop lift, run intake to suck cube up
-  while(Hardware::limit_switch.get_value()){
+  if (Hardware::limit_switch.get_value())
+  {
+    pick_up_vert_intake_time = pros::millis();
+    if (Hardware::lift.getCurrPos() >= .1)
+      Hardware::lift.lower(6000);
+    else
+      Hardware::lift.stop();
+
     Hardware::vert_intake.takeIn();
   }
 }
+
+uint32_t back_up_timer = 0;
+uint32_t intake_timer = 0;
+
+int drop_stack_state_auto = 0;
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -72,127 +100,144 @@ void pick_up(){
 void autonomous()
 {
 
-	while (true)
-	{
+  while (true)
+  {
+    pick_up();
 
-    // State machine that controls the lift parallel to the main program.
-    // Allows the lift to hold it's "state" between main automous states. For example,
-    // if the lift is raising when the main program changes states, it will continue raising
-    // into the next main program state.
-    switch(auto_lift_current)
-    {
-      // Only raise if it has not reached it's max height
-      case RAISE:
-        if(Hardware::lift.getCurrPos() < 2.96)
-          Hardware::lift.raise(12000);
-        else
-          Hardware::lift.stop();
-      break;
-
-      case LOWER:
-        // Only lower if it has not reached it's min height
-        if(Hardware::lift.getCurrPos() > 0)
-          Hardware::lift.lower(6000);
-        else
-          Hardware::lift.stop();
-      break;
-
-      // Hold the lift where it is using the PID loop
-      default:
-      case HOLD:
-        Hardware::lift.hold_pos(auto_lift_hold_pos);
-      break;
-    }
-
-		pros::lcd::print(0, "Angle: %f", Hardware::gyro.get());
+    pros::lcd::print(0, "Angle: %f", Hardware::gyro.get());
 
     // The main autonomous program.
-		switch (auto_1_current)
-		{
-		case INIT:
-			// Inititalize / calibrate period
+    switch (auto_1_current)
+    {
+    case INIT:
+      Hardware::vert_intake.close();
+      // Inititalize / calibrate period
       auto_lift_hold_pos = .2;
       auto_lift_current = HOLD;
 
-			auto_1_current = DRIVE1;
-			break;
-		case DRIVE1:
-			// Drive forward towards cube group A(red) or O(blue)
+      auto_1_current = DRIVE1;
+      break;
+    case DRIVE1:
+      // Drive forward towards cube group A(red) or O(blue)
 
-			if (Hardware::drive_system.drive_forward(5, drive_speed))
-				auto_1_current = COLLECT_AO;
+      if (Hardware::drive_system.drive_forward(5, drive_speed))
+        auto_1_current = COLLECT_AO;
 
-			break;
-		case COLLECT_AO:
-			// Collect the cubes, one at a time, driving forward slowly
+      break;
+    case COLLECT_AO:
+      // Collect the cubes, one at a time, driving forward slowly
 
-			Hardware::horiz_intake.run_intake(true, false);
+      Hardware::horiz_intake.run_intake(true, false);
+      if (Hardware::limit_switch.get_value())
+        back_up_timer = pros::millis();
 
-			if (Hardware::drive_system.drive_forward(22, drive_slow_speed))
-				auto_1_current = TURN1;
+      if (pros::millis() - back_up_timer < 500)
+        Hardware::drive_system.drive(-.1, -.1);
+      else if (Hardware::drive_system.drive_forward(28, drive_slow_speed))
+        auto_1_current = TURN1;
 
-			break;
-		case TURN1:
-			// Turn towards the Q group of cubes
-			Hardware::horiz_intake.run_intake(false, false);
-			if (Hardware::drive_system.turn_degrees(color * 15, turn_speed))
-				auto_1_current = COLLECT_Q;
+      break;
+    case TURN1:
+      // Turn towards the Q group of cubes
+      Hardware::horiz_intake.run_intake(false, false);
+      if (Hardware::drive_system.turn_degrees(color * 25, turn_speed))
+        auto_1_current = COLLECT_Q;
 
-			break;
-		case COLLECT_Q:
-			// Collect the single Q cube
+      break;
+    case COLLECT_Q:
+      // Collect the single Q cube
 
-			Hardware::horiz_intake.run_intake(true, false);
-			if (Hardware::drive_system.drive_forward(1, drive_slow_speed))
-				auto_1_current = REVERSE1;
+      Hardware::horiz_intake.run_intake(true, false);
+      if (Hardware::drive_system.drive_forward(11,  drive_slow_speed))
+        auto_1_current = REVERSE1;
 
-			break;
+      break;
     case REVERSE1:
-      Hardware::horiz_intake.run_intake(false,false);
-      if(Hardware::drive_system.drive_forward(-14, drive_speed))
+      Hardware::horiz_intake.run_intake(false, false);
+      done_picking_up = true;
+      if (Hardware::drive_system.drive_forward(-11, drive_speed))
       {
         auto_1_current = TURN2;
       }
-    break;
+      break;
     case TURN2:
-      if(Hardware::drive_system.turn_degrees(-15, turn_speed))
+      if (Hardware::drive_system.turn_degrees(color * -25, turn_speed))
       {
         auto_1_current = REVERSE2;
       }
       break;
-		case REVERSE2:
-			// Begin reversing to drop off cubes
+    case REVERSE2:
+      // Begin reversing to drop off cubes
 
-			if (Hardware::drive_system.drive_forward(-15, drive_speed))
-				auto_1_current = TURN3;
+      if (Hardware::drive_system.drive_forward(-36, drive_speed))
+        auto_1_current = TURN3;
 
-			break;
-		case TURN3:
-			// Turn towards scoring zone
+      break;
+    case TURN3:
+      // Turn towards scoring zone
       Hardware::horiz_intake.run_intake(false, false);
 
-			if (Hardware::drive_system.turn_degrees(color * -150, turn_speed))
-				auto_1_current = DRIVE3;
+      if (Hardware::drive_system.turn_degrees(color * -165, turn_speed))
+      {
+        auto_1_current = DRIVE3;
+        intake_timer = pros::millis();
+      }
 
-			break;
-		case DRIVE3:
-			// Drive to scoring zone
+      break;
+    case DRIVE3:
+      // Drive to scoring zone, running the horizontal intake for 1 second to get the wheels out of the way
+      if (pros::millis() - intake_timer < 1000)
+        Hardware::horiz_intake.run_intake(false, true);
+      else
+        Hardware::horiz_intake.run_intake(false, false);
 
-			break;
-		case DROP1:
-			// Drop off the 6 stack of cubes
+      if (Hardware::drive_system.drive_forward(15, drive_speed))
+        auto_1_current = DROP1;
+      break;
+    case DROP1:
+      // Drop off the 6 stack of cubes
 
-			break;
-		case REVERSE_AWAY:
-			// Reverse away from the stacked cubes to get credit for the drop
+      //Mini state machine for dropping off cubes
+      switch (drop_stack_state_auto)
+      {
+      // First, lower the lift to 0
+      case 0:
+        if (Hardware::lift.getCurrPos() < .15)
+        {
+          Hardware::lift.stop();
+          intake_timer = pros::millis();
+          drop_stack_state_auto++;
+        }
+        Hardware::lift.lower(4000);
+        break;
+      //Next, run the vertical intake down for a set time
+      case 1:
+        if (pros::millis() - intake_timer > 400)
+        {
+          Hardware::vert_intake.stop_intake();
+          drop_stack_state_auto++;
+        }
+        Hardware::vert_intake.drop();
+        break;
+      // Last, open the doors
+      case 2:
+        if(Hardware::vert_intake.open())
+          auto_1_current = REVERSE_AWAY;
+      break;
+      }
 
-			break;
-		case END:
-			// Stop motors and return from function.
+      break;
+    case REVERSE_AWAY:
+      // Reverse away from the stacked cubes to get credit for the drop
+      if(Hardware::drive_system.drive_forward(-10, drive_speed))
+        auto_1_current = END;
+      break;
+    case END:
+      // Stop motors and return from function.
+      Hardware::drive_system.drive(0,0);
+      return;
+    }
 
-			return;
-		}
-
-		pros::delay(20);
-	}
+    pros::delay(20);
+  }
 }
