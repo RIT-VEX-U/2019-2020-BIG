@@ -132,7 +132,7 @@ void autonomous()
         back_up_timer = pros::millis();
 
       if (pros::millis() - back_up_timer < 500)
-        Hardware::drive_system.drive(-.1, -.1);
+        Hardware::drive_system.drive(0, 0);
       else if (Hardware::drive_system.drive_forward(28, drive_slow_speed))
         auto_1_current = TURN1;
 

@@ -99,7 +99,13 @@ bool test_turn = false;
  *      RightY: Directly controls "right" wheels
  * 
  * "Partner" Remote:
- *    
+ *    LeftY: Raise / Lower lift
+ *    Left Bumpers: Horizontal Intake in
+ *    Right Bumpers: Horizontal Intake out
+ *    A: Lower lift, drop cubes, and open door
+ *    B: Lower lift while running vertical intake up
+ *    X: Open / Close door
+ *    Y: Run the vertical intake up
  *  
  */
 void opcontrol()
@@ -179,7 +185,10 @@ void opcontrol()
       // As long as B is not being pressed, do not run the vert intake.
       else
       {
-        Hardware::vert_intake.stop_intake();
+        if(Hardware::partner.get_digital(DIGITAL_Y))
+          Hardware::vert_intake.takeIn();
+        else
+          Hardware::vert_intake.stop_intake();
       }
 
       // Run the lift manually using the left analog stick
