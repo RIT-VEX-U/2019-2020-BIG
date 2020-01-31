@@ -191,7 +191,7 @@ void autonomous()
       else
         Hardware::horiz_intake.run_intake(false, false);
 
-      if (Hardware::drive_system.drive_forward(15, drive_speed))
+      if (Hardware::left_button.get_value() && Hardware::right_button.get_value())
         auto_1_current = DROP1;
       break;
     case DROP1:
