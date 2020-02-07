@@ -138,6 +138,9 @@ void opcontrol()
     continue;
     */
     // If A is pressed, then start the "drop the stack" semi-auto function.
+
+    
+    
     if (Hardware::partner.get_digital_new_press(DIGITAL_A))
     {
       drop_stack_state = 0;
@@ -155,6 +158,19 @@ void opcontrol()
         Hardware::vert_intake.open();
       else
         Hardware::vert_intake.close();
+    
+    if(Hardware::partner.get_digital(DIGITAL_UP))
+    {
+      Hardware::intake_door.move_voltage(4000);
+      pros::delay(50);
+      Hardware::intake_door.tare_position();
+      Hardware::intake_door.move_relative(0, 200);
+    }else if(Hardware::partner.get_digital(DIGITAL_DOWN))
+    {
+      Hardware::intake_door.move_voltage(-4000);
+      pros::delay(50);
+      Hardware::intake_door.move_relative(0, 200);
+    }
 
     // "Default states" for the lift:
     // If the user presses B, lower the lift while running the vert intake,

@@ -16,14 +16,14 @@ void config::initialize()
     drive_pid_config.deadband = .5;
 
     // turn_degrees() config
-    turn_pid_config.feedforward = 0;
-    turn_pid_config.p = .035;
+    turn_pid_config.feedforward = .1;
+    turn_pid_config.p = .045;
     turn_pid_config.i = .000;
     turn_pid_config.d = .006;
     turn_pid_config.deadband = 3;
     turn_pid_config.on_target_time = .3;
 
-    lift_pid_config.feedforward = 4000;
+    lift_pid_config.feedforward = 5000;
     lift_pid_config.p = 4000;
     //lift_pid_config.i = 40;
     lift_pid_config.deadband = 0.02;
