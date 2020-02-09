@@ -34,7 +34,7 @@ public:
     right.move_relative(0, 200);
   }
 
-  int open_pos = -550;
+  int open_pos = -750;
   int close_pos = 0;
 
   //open the door of the intake

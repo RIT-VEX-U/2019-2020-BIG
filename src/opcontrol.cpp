@@ -99,7 +99,13 @@ bool test_turn = false;
  *      RightY: Directly controls "right" wheels
  * 
  * "Partner" Remote:
- *    
+ *    LeftY: Raise / Lower lift
+ *    Left Bumpers: Horizontal Intake in
+ *    Right Bumpers: Horizontal Intake out
+ *    A: Lower lift, drop cubes, and open door
+ *    B: Lower lift while running vertical intake up
+ *    X: Open / Close door
+ *    Y: Run the vertical intake up
  *  
  */
 void opcontrol()
@@ -132,6 +138,9 @@ void opcontrol()
     continue;
     */
     // If A is pressed, then start the "drop the stack" semi-auto function.
+
+    
+    
     if (Hardware::partner.get_digital_new_press(DIGITAL_A))
     {
       drop_stack_state = 0;
@@ -149,6 +158,19 @@ void opcontrol()
         Hardware::vert_intake.open();
       else
         Hardware::vert_intake.close();
+    
+    if(Hardware::partner.get_digital(DIGITAL_UP))
+    {
+      Hardware::intake_door.move_voltage(4000);
+      pros::delay(50);
+      Hardware::intake_door.tare_position();
+      Hardware::intake_door.move_relative(0, 200);
+    }else if(Hardware::partner.get_digital(DIGITAL_DOWN))
+    {
+      Hardware::intake_door.move_voltage(-4000);
+      pros::delay(50);
+      Hardware::intake_door.move_relative(0, 200);
+    }
 
     // "Default states" for the lift:
     // If the user presses B, lower the lift while running the vert intake,
@@ -179,7 +201,10 @@ void opcontrol()
       // As long as B is not being pressed, do not run the vert intake.
       else
       {
-        Hardware::vert_intake.stop_intake();
+        if(Hardware::partner.get_digital(DIGITAL_Y))
+          Hardware::vert_intake.takeIn();
+        else
+          Hardware::vert_intake.stop_intake();
       }
 
       // Run the lift manually using the left analog stick

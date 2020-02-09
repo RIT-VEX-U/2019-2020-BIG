@@ -41,6 +41,8 @@ void TankDrive::arcade_drive(double left_y, double right_x)
 
   left_front.move_velocity(left_out * gearset);
   right_front.move_velocity(right_out * gearset);
+  left_middle.move_velocity(left_out * gearset);
+  right_middle.move_velocity(right_out * gearset);
   left_rear.move_velocity(left_out * gearset);
   right_rear.move_velocity(right_out * gearset);
 }

@@ -1,11 +1,8 @@
 #include "main.h"
 #include "hardware.h"
 
-enum AUTO_COLOR
-{
-  BLUE = 1,
-  RED = -1
-};
+  double BLUE = 1.0;
+  double RED = -1.0;
 
 enum AUTO_1_STATE
 {
@@ -26,7 +23,7 @@ enum AUTO_1_STATE
 };
 
 AUTO_1_STATE auto_1_current = INIT;
-AUTO_COLOR color = BLUE;
+const double color = RED;
 
 enum AUTO_LIFT_STATE
 {
@@ -61,7 +58,7 @@ void pick_up()
   //Position the robot so that the cube is ready to be sucked up
   if (!Hardware::limit_switch.get_value())
   {
-    Hardware::lift.hold_pos(0.2);
+    Hardware::lift.hold_pos(0.3);
     if (pros::millis() - pick_up_vert_intake_time < 500)
       Hardware::vert_intake.takeIn();
     else
@@ -132,15 +129,15 @@ void autonomous()
         back_up_timer = pros::millis();
 
       if (pros::millis() - back_up_timer < 500)
-        Hardware::drive_system.drive(-.1, -.1);
+        Hardware::drive_system.drive(0, 0);
       else if (Hardware::drive_system.drive_forward(28, drive_slow_speed))
-        auto_1_current = TURN1;
+        auto_1_current = REVERSE2;
 
       break;
     case TURN1:
       // Turn towards the Q group of cubes
       Hardware::horiz_intake.run_intake(false, false);
-      if (Hardware::drive_system.turn_degrees(color * 25, turn_speed))
+      if (Hardware::drive_system.turn_degrees((color * 25), turn_speed))
         auto_1_current = COLLECT_Q;
 
       break;
@@ -161,7 +158,7 @@ void autonomous()
       }
       break;
     case TURN2:
-      if (Hardware::drive_system.turn_degrees(color * -25, turn_speed))
+      if (Hardware::drive_system.turn_degrees((color * -25), turn_speed))
       {
         auto_1_current = REVERSE2;
       }
@@ -169,7 +166,7 @@ void autonomous()
     case REVERSE2:
       // Begin reversing to drop off cubes
 
-      if (Hardware::drive_system.drive_forward(-36, drive_speed))
+      if (Hardware::drive_system.drive_forward(-20, drive_speed))
         auto_1_current = TURN3;
 
       break;
@@ -177,7 +174,7 @@ void autonomous()
       // Turn towards scoring zone
       Hardware::horiz_intake.run_intake(false, false);
 
-      if (Hardware::drive_system.turn_degrees(color * -165, turn_speed))
+      if (Hardware::drive_system.turn_degrees((color * -130), turn_speed))
       {
         auto_1_current = DRIVE3;
         intake_timer = pros::millis();
@@ -191,7 +188,7 @@ void autonomous()
       else
         Hardware::horiz_intake.run_intake(false, false);
 
-      if (Hardware::left_button.get_value() && Hardware::right_button.get_value())
+      if (Hardware::drive_system.drive_forward(30, drive_speed))
         auto_1_current = DROP1;
       break;
     case DROP1:
