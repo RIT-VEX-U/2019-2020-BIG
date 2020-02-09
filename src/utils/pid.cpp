@@ -37,6 +37,8 @@ void PID::update(double sensorVal)
 
     if(lower_limit != 0 || upper_limit != 0)
         out = (out < lower_limit) ? lower_limit : (out > upper_limit) ? upper_limit : out;
+
+    pros::lcd::print(1, "out: %f, err: %f", out, get_error());
     
 }
 

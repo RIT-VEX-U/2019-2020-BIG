@@ -7,6 +7,7 @@
 #include "utils/pid.hpp"
 #include <ctime>
 #include "logging.hpp"
+#include "pros/imu.hpp"
 
 #define PI 3.1415926536
 
@@ -42,7 +43,7 @@ private:
 
   int gearset;
 
-  okapi::ADIGyro *gyro;  
+  pros::Imu *imu;
 
 
   // common variables
@@ -93,8 +94,8 @@ public:
   Initialize the drive encoders to measure in number of rotations, to make computing
   the distance traveled based on the wheel size easier.
   */
-  TankDrive(pros::Motor left_front, pros::Motor right_front, pros::Motor left_middle, pros::Motor right_middle, pros::Motor left_rear, pros::Motor right_rear, pros::motor_gearset_e_t gearset, okapi::ADIGyro *gyro, config_t *config, PID::config_t *drive_pid_config, PID::config_t *turn_pid_config):
-  left_front(left_front), right_front(right_front),left_middle(left_middle), right_middle(right_middle), left_rear(left_rear), right_rear(right_rear), gearset((int)gearset == 0 ? 100 : (int)gearset == 1 ? 200 : 600), gyro(gyro), config(config)
+  TankDrive(pros::Motor left_front, pros::Motor right_front, pros::Motor left_middle, pros::Motor right_middle, pros::Motor left_rear, pros::Motor right_rear, pros::motor_gearset_e_t gearset, pros::Imu *imu, config_t *config, PID::config_t *drive_pid_config, PID::config_t *turn_pid_config):
+  left_front(left_front), right_front(right_front),left_middle(left_middle), right_middle(right_middle), left_rear(left_rear), right_rear(right_rear), gearset((int)gearset == 0 ? 100 : (int)gearset == 1 ? 200 : 600), imu(imu), config(config)
   {
     drive_pid = new PID(drive_pid_config);
     turn_pid = new PID(turn_pid_config);

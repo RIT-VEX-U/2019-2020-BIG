@@ -84,10 +84,10 @@ bin/config.cpp.o: src/config.cpp include/config.h include/hardware.h \
  include/okapi/api/util/mathUtil.hpp include/okapi/impl/util/timer.hpp \
  include/okapi/impl/device/motor/motor.hpp \
  include/okapi/impl/device/rotarysensor/adiGyro.hpp include/utils/pid.hpp \
- include/logging.hpp include/main.h include/subsystems/rd4Bar.hpp \
- include/subsystems/horiz_intake.hpp include/pros/motors.hpp \
- include/subsystems/vertical_intake.hpp include/pros/apix.h \
- include/config.h
+ include/logging.hpp include/main.h include/pros/imu.hpp \
+ include/subsystems/rd4Bar.hpp include/subsystems/horiz_intake.hpp \
+ include/pros/motors.hpp include/subsystems/vertical_intake.hpp \
+ include/pros/apix.h include/config.h
 
 include/config.h:
 
@@ -396,6 +396,8 @@ include/utils/pid.hpp:
 include/logging.hpp:
 
 include/main.h:
+
+include/pros/imu.hpp:
 
 include/subsystems/rd4Bar.hpp:
 

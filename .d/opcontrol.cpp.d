@@ -84,9 +84,10 @@ bin/opcontrol.cpp.o: src/opcontrol.cpp include/main.h include/api.h \
  include/okapi/api/util/mathUtil.hpp include/okapi/impl/util/timer.hpp \
  include/okapi/impl/device/motor/motor.hpp \
  include/okapi/impl/device/rotarysensor/adiGyro.hpp include/utils/pid.hpp \
- include/subsystems/rd4Bar.hpp include/subsystems/horiz_intake.hpp \
- include/pros/motors.hpp include/subsystems/vertical_intake.hpp \
- include/pros/apix.h include/config.h include/hardware.h
+ include/pros/imu.hpp include/subsystems/rd4Bar.hpp \
+ include/subsystems/horiz_intake.hpp include/pros/motors.hpp \
+ include/subsystems/vertical_intake.hpp include/pros/apix.h \
+ include/config.h include/hardware.h
 
 include/main.h:
 
@@ -395,6 +396,8 @@ include/okapi/impl/device/motor/motor.hpp:
 include/okapi/impl/device/rotarysensor/adiGyro.hpp:
 
 include/utils/pid.hpp:
+
+include/pros/imu.hpp:
 
 include/subsystems/rd4Bar.hpp:
 

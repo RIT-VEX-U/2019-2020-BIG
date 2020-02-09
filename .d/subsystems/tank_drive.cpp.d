@@ -83,7 +83,7 @@ bin/subsystems/tank_drive.cpp.o: src/subsystems/tank_drive.cpp \
  include/okapi/api/util/mathUtil.hpp include/okapi/impl/util/timer.hpp \
  include/okapi/impl/device/motor/motor.hpp \
  include/okapi/impl/device/rotarysensor/adiGyro.hpp include/utils/pid.hpp \
- include/logging.hpp include/main.h include/api.h
+ include/logging.hpp include/main.h include/api.h include/pros/imu.hpp
 
 include/subsystems/tank_drive.hpp:
 
@@ -388,3 +388,5 @@ include/logging.hpp:
 include/main.h:
 
 include/api.h:
+
+include/pros/imu.hpp:
