@@ -29,6 +29,7 @@ namespace Hardware
   extern pros::Motor right_rear;
 
   extern okapi::ADIGyro gyro;
+  extern pros::Imu imu;
 
   extern TankDrive drive_system;
 

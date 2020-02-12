@@ -93,16 +93,15 @@ bool TankDrive::turn_degrees(double degrees, double percent_speed)
   //Initialize the function, reset gyro and timers
   if(initialize_func == false)
   {
-    gyro->reset();
 
     turn_pid->reset();
     turn_pid->set_limits(-fabs(percent_speed), fabs(percent_speed));
-    turn_pid->set_target(degrees);
+    turn_pid->set_target(degrees - imu->get_rotation());
 
     initialize_func = true;
   }
 
-  turn_pid->update(gyro->get());
+  turn_pid->update(imu->get_rotation());
   drive(turn_pid->get(), -turn_pid->get());
 
   // Exit condition: if the position is within x deadband for t seconds, return true.

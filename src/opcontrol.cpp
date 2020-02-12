@@ -119,9 +119,13 @@ void opcontrol()
   Hardware::master.clear();
   Hardware::intake_door.move_absolute(0, 200);
 
+  while(Hardware::imu.is_calibrating()){}
+
   while (true)
   {
     /*
+    pros::lcd::print(0, "Gyro: %f", Hardware::imu.get_yaw());
+
     if (Hardware::master.get_digital(DIGITAL_A))
       test_turn = true;
 

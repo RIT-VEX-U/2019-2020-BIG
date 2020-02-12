@@ -36,7 +36,8 @@ using namespace pros;
 
 okapi::ADIGyro Hardware::gyro(1, .1);
 
-ADIDigitalOut Hardware::solenoid('B');
+pros::ADIDigitalOut Hardware::solenoid('B');
+pros::Imu Hardware::imu(15);
 
 ADIButton Hardware::limit_switch('H');
 
@@ -50,7 +51,7 @@ Motor Hardware::right_middle(7, true);
 Motor Hardware::left_rear(19, false);
 Motor Hardware::right_rear(11, true);
 
-TankDrive Hardware::drive_system(Hardware::left_front, Hardware::right_front, Hardware::left_middle, Hardware::right_middle, Hardware::left_rear, Hardware::right_rear, pros::E_MOTOR_GEARSET_18, &Hardware::gyro, &config::drive_config, &config::drive_pid_config, &config::turn_pid_config);
+TankDrive Hardware::drive_system(Hardware::left_front, Hardware::right_front, Hardware::left_middle, Hardware::right_middle, Hardware::left_rear, Hardware::right_rear, pros::E_MOTOR_GEARSET_18, &Hardware::imu, &config::drive_config, &config::drive_pid_config, &config::turn_pid_config);
 
 okapi::Motor Hardware::lift1(-10);
 okapi::Motor Hardware::lift2(9);
