@@ -22,7 +22,7 @@ bool last_action_b_button = false;
  * 1. Lower the lift to MIN_LIFT height, while running the horizontal intake wheels in reverse to get them out of the way
  * 2. Run the vertical intake wheels in reverse for a set amount of time to place the cubes on the ground
  * 3. Open the pod bay doors (sorry dave)
- * 
+ *
  * This is a non-blocking function, and will return true when the sequence has finished, and false otherwise.
  * Make sure when calling this function, the horizontal and vertical intake / lift / doors are not accessed, or
  * chaos may ensue.
@@ -84,12 +84,12 @@ bool test_turn = false;
 
 /**
  * function opcontrol()
- * 
+ *
  * Code run when an operator is controlling the robot.
  * OpControl initialization takes place before the while loop.
- * 
+ *
  * Driver Controls:
- * 
+ *
  * "Master" Remote:
  *    -Drive control (Arcade):
  *      LeftY: Forward / Backward
@@ -97,7 +97,7 @@ bool test_turn = false;
  *    -Drive control (Tank):
  *      LeftY: Directly controls "left" wheels
  *      RightY: Directly controls "right" wheels
- * 
+ *
  * "Partner" Remote:
  *    LeftY: Raise / Lower lift
  *    Left Bumpers: Horizontal Intake in
@@ -106,7 +106,7 @@ bool test_turn = false;
  *    B: Lower lift while running vertical intake up
  *    X: Open / Close door
  *    Y: Run the vertical intake up
- *  
+ *
  */
 void opcontrol()
 {
@@ -139,8 +139,13 @@ void opcontrol()
     */
     // If A is pressed, then start the "drop the stack" semi-auto function.
 
-    
-    
+    if(Hardware::master.get_digital(DIGITAL_LEFT)){
+      Hardware::solenoid.set_value(1);
+    }
+    else{
+      Hardware::solenoid.set_value(0);
+    }
+
     if (Hardware::partner.get_digital_new_press(DIGITAL_A))
     {
       drop_stack_state = 0;
@@ -158,7 +163,7 @@ void opcontrol()
         Hardware::vert_intake.open();
       else
         Hardware::vert_intake.close();
-    
+
     if(Hardware::partner.get_digital(DIGITAL_UP))
     {
       Hardware::intake_door.move_voltage(4000);

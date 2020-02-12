@@ -14,7 +14,6 @@ using namespace pros;
 
 namespace Hardware
 {
-
   extern pros::ADIDigitalOut solenoid;
 
   extern pros::ADIButton limit_switch;
