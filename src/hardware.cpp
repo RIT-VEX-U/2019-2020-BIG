@@ -36,6 +36,7 @@ using namespace pros;
 
 okapi::ADIGyro Hardware::gyro(1, .1);
 
+pros::ADIDigitalOut Hardware::solenoid('B');
 pros::Imu Hardware::imu(15);
 
 ADIButton Hardware::limit_switch('H');
