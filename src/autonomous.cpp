@@ -1,5 +1,6 @@
 #include "main.h"
 #include "hardware.h"
+#include "okapi/pathfinder/include/pathfinder.h"
 
   double BLUE = 1.0;
   double RED = -1.0;
@@ -82,6 +83,45 @@ uint32_t back_up_timer = 0;
 uint32_t intake_timer = 0;
 
 int drop_stack_state_auto = 0;
+void pathfinder_test()
+{
+  Waypoint collect_a[2];
+  collect_a[0] = {0, 30, 0};
+  collect_a[1] = {10, 12, d2r(40)};
+
+  TrajectoryCandidate candidate;
+  pathfinder_prepare(collect_a, 2, FIT_HERMITE_CUBIC, PATHFINDER_SAMPLES_HIGH, .001, 5, 10, 60, &candidate);
+  int length = candidate.length;
+  Segment *trajectory = (Segment *)malloc(length * sizeof(Segment));
+  pathfinder_generate(&candidate, trajectory);
+
+  Segment left_trajectory[length];
+  Segment right_trajectory[length];
+
+  pathfinder_modify_tank(trajectory, length, left_trajectory, right_trajectory, 11.5);
+
+  EncoderFollower follower;
+
+  // initial enc, ticks per rev, wheel circumference, kp, ki, kd, kv, ka
+  EncoderConfig config = {0, 900, 4 * PI, .1, 0, 0, .1, 0};
+
+  Hardware::left_middle.set_encoder_units(E_MOTOR_ENCODER_COUNTS);
+  Hardware::right_middle.set_encoder_units(E_MOTOR_ENCODER_COUNTS);
+
+  while (1)
+  {
+    double l_out = pathfinder_follow_encoder(config, &follower, left_trajectory, length, Hardware::left_middle.get_position());
+    double r_out = pathfinder_follow_encoder(config, &follower, right_trajectory, length, Hardware::right_middle.get_position());
+
+    double delta_angle = follower.heading - Hardware::imu.get_rotation();
+
+    l_out += delta_angle * .045;
+    r_out -= delta_angle * .045;
+
+    Hardware::drive_system.drive(l_out, r_out);
+
+  }
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -96,6 +136,10 @@ int drop_stack_state_auto = 0;
  */
 void autonomous()
 {
+
+  pathfinder_test();
+  return;
+
 
   while (true)
   {

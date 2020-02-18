@@ -86,7 +86,19 @@ bin/autonomous.cpp.o: src/autonomous.cpp include/main.h include/api.h \
  include/logging.hpp include/main.h include/pros/imu.hpp \
  include/subsystems/rd4Bar.hpp include/subsystems/horiz_intake.hpp \
  include/pros/motors.hpp include/subsystems/vertical_intake.hpp \
- include/pros/apix.h include/config.h include/hardware.h
+ include/pros/apix.h include/config.h include/hardware.h \
+ include/okapi/pathfinder/include/pathfinder.h \
+ include/okapi/pathfinder/include/pathfinder/mathutil.h \
+ include/okapi/pathfinder/include/pathfinder/lib.h \
+ include/okapi/pathfinder/include/pathfinder/structs.h \
+ include/okapi/pathfinder/include/pathfinder/fit.h \
+ include/okapi/pathfinder/include/pathfinder/spline.h \
+ include/okapi/pathfinder/include/pathfinder/trajectory.h \
+ include/okapi/pathfinder/include/pathfinder/modifiers/tank.h \
+ include/okapi/pathfinder/include/pathfinder/modifiers/swerve.h \
+ include/okapi/pathfinder/include/pathfinder/followers/encoder.h \
+ include/okapi/pathfinder/include/pathfinder/followers/distance.h \
+ include/okapi/pathfinder/include/pathfinder/io.h
 
 include/main.h:
 
@@ -411,3 +423,27 @@ include/pros/apix.h:
 include/config.h:
 
 include/hardware.h:
+
+include/okapi/pathfinder/include/pathfinder.h:
+
+include/okapi/pathfinder/include/pathfinder/mathutil.h:
+
+include/okapi/pathfinder/include/pathfinder/lib.h:
+
+include/okapi/pathfinder/include/pathfinder/structs.h:
+
+include/okapi/pathfinder/include/pathfinder/fit.h:
+
+include/okapi/pathfinder/include/pathfinder/spline.h:
+
+include/okapi/pathfinder/include/pathfinder/trajectory.h:
+
+include/okapi/pathfinder/include/pathfinder/modifiers/tank.h:
+
+include/okapi/pathfinder/include/pathfinder/modifiers/swerve.h:
+
+include/okapi/pathfinder/include/pathfinder/followers/encoder.h:
+
+include/okapi/pathfinder/include/pathfinder/followers/distance.h:
+
+include/okapi/pathfinder/include/pathfinder/io.h:

@@ -12,8 +12,8 @@ Tank Drive:
   Right Back: 12, reversed
 
 Reverse Double 4 Bar:
-  left bottom: 9
-  left top: 10, reversed
+  left bottom: 9 reversed
+  left top: 10, 
   right bottom: 1
   right top: 2, reversed
 
@@ -52,8 +52,8 @@ Motor Hardware::right_rear(11, true);
 
 TankDrive Hardware::drive_system(Hardware::left_front, Hardware::right_front, Hardware::left_middle, Hardware::right_middle, Hardware::left_rear, Hardware::right_rear, pros::E_MOTOR_GEARSET_18, &Hardware::imu, &config::drive_config, &config::drive_pid_config, &config::turn_pid_config);
 
-okapi::Motor Hardware::lift1(-10);
-okapi::Motor Hardware::lift2(9);
+okapi::Motor Hardware::lift1(10);
+okapi::Motor Hardware::lift2(-9);
 okapi::Motor Hardware::lift3(-2);
 okapi::Motor Hardware::lift4(1);
 
