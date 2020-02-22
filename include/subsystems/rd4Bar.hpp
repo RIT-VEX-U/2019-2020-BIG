@@ -34,8 +34,8 @@ public:
   rd4Bar(okapi::MotorGroup lift_motors1, okapi::MotorGroup lift_motors2, int holdingPower, PID::config_t *lift_pid_config) : lift_motors1(lift_motors1), lift_motors2(lift_motors2){
     this -> holdingPower = holdingPower;
     lift_pid = new PID(lift_pid_config);
-    lift_motors2.setReversed(false);
-    lift_motors1.setReversed(true);
+    lift_motors2.setReversed(true);
+    lift_motors1.setReversed(false);
     lift_motors1.setEncoderUnits(okapi::AbstractMotor::encoderUnits::rotations);
     lift_motors2.setEncoderUnits(okapi::AbstractMotor::encoderUnits::rotations);
   }

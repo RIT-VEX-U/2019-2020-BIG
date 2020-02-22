@@ -99,7 +99,7 @@ bool test_turn = false;
  *      RightY: Directly controls "right" wheels
  *
  * "Partner" Remote:
- *    LeftY: Raise / Lower lift
+ *    LeftY: Raise / Lower
  *    Left Bumpers: Horizontal Intake in
  *    Right Bumpers: Horizontal Intake out
  *    A: Lower lift, drop cubes, and open door
@@ -114,12 +114,15 @@ void opcontrol()
 
   int x = 0;
 
-  char const *position_format = "pos: %d, time: %f";
+  char const *position_format = "pos: %f";
   char position[100];
   Hardware::master.clear();
   Hardware::intake_door.move_absolute(0, 200);
 
-  while(Hardware::imu.is_calibrating()){}
+  /*while(Hardware::imu.is_calibrating()){
+    sprintf(position, position_format, timer.millis());
+    Hardware::partner.print(2, 1, position);
+  }*/
 
   while (true)
   {
@@ -142,6 +145,9 @@ void opcontrol()
     continue;
     */
     // If A is pressed, then start the "drop the stack" semi-auto function.
+
+    sprintf(position, position_format, timer.millis());
+    Hardware::partner.print(2, 1, position);
 
     if(Hardware::master.get_digital(DIGITAL_LEFT)){
       Hardware::solenoid.set_value(1);
@@ -240,9 +246,9 @@ void opcontrol()
       }
     }
 
-    okapi::QTime t = timer.millis();
-    sprintf(position, position_format, x, t);
-    Hardware::partner.print(2, 1, position);
+    //okapi::QTime t = timer.millis();
+    //sprintf(position, position_format, x, t);
+    //Hardware::partner.print(2, 1, position);
 
     double left = Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
     double right = Hardware::master.get_analog(ANALOG_RIGHT_X) / 127.0;
@@ -251,6 +257,8 @@ void opcontrol()
     //Log all motors
     //Hardware::drive_system.logDrive();
     //Hardware::lift.logLift();
+
+
 
     pros::delay(DELAY);
   }

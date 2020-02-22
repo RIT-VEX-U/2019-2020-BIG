@@ -36,10 +36,10 @@ using namespace pros;
 
 okapi::ADIGyro Hardware::gyro(1, .1);
 
-pros::ADIDigitalOut Hardware::solenoid('B');
+pros::ADIDigitalOut Hardware::solenoid('H');
 pros::Imu Hardware::imu(15);
 
-ADIButton Hardware::limit_switch('H');
+ADIButton Hardware::limit_switch('B');
 
 ADIButton Hardware::right_button('G');
 ADIButton Hardware::left_button('F');
@@ -53,9 +53,9 @@ Motor Hardware::right_rear(11, true);
 
 TankDrive Hardware::drive_system(Hardware::left_front, Hardware::right_front, Hardware::left_middle, Hardware::right_middle, Hardware::left_rear, Hardware::right_rear, pros::E_MOTOR_GEARSET_18, &Hardware::imu, &config::drive_config, &config::drive_pid_config, &config::turn_pid_config);
 
-okapi::Motor Hardware::lift1(-10);
+okapi::Motor Hardware::lift1(10);
 okapi::Motor Hardware::lift2(9);
-okapi::Motor Hardware::lift3(-2);
+okapi::Motor Hardware::lift3(2);
 okapi::Motor Hardware::lift4(1);
 
 rd4Bar Hardware::lift({lift1, lift4}, {lift2, lift3}, 50, &config::lift_pid_config);  //6 & 7 Reversed
