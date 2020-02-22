@@ -45,19 +45,9 @@ bool drop_stack()
     Hardware::horiz_intake.run_intake(false, true);
     Hardware::lift.lower(8000);
     break;
-  // step 2: Run the vertical intake wheels in reverse for 300 milliseconds
-  case 1:
-    if (pros::millis() - drop_stack_timer > 300)
-    {
-      Hardware::vert_intake.stop_intake();
-      drop_stack_state++;
-      break;
-    }
-    Hardware::vert_intake.drop();
-    break;
 
   //Step three: open the door
-  case 2:
+  case 1:
     if (Hardware::vert_intake.is_open())
     {
       drop_stack_state = 0;
@@ -117,7 +107,6 @@ void opcontrol()
   char const *position_format = "pos: %d, time: %f";
   char position[100];
   Hardware::master.clear();
-  Hardware::intake_door.move_absolute(0, 200);
 
   while(Hardware::imu.is_calibrating()){}
 
@@ -168,18 +157,6 @@ void opcontrol()
       else
         Hardware::vert_intake.close();
 
-    if(Hardware::partner.get_digital(DIGITAL_UP))
-    {
-      Hardware::intake_door.move_voltage(4000);
-      pros::delay(50);
-      Hardware::intake_door.tare_position();
-      Hardware::intake_door.move_relative(0, 200);
-    }else if(Hardware::partner.get_digital(DIGITAL_DOWN))
-    {
-      Hardware::intake_door.move_voltage(-4000);
-      pros::delay(50);
-      Hardware::intake_door.move_relative(0, 200);
-    }
 
     // "Default states" for the lift:
     // If the user presses B, lower the lift while running the vert intake,
@@ -198,22 +175,12 @@ void opcontrol()
         else
           Hardware::lift.stop();
 
-        Hardware::vert_intake.takeIn();
       }
       // If B is released, go to the "above one cube" height if it is below that height.
       // Stop the vertical intake.
       else if (lift_pos < lift_heights[0] - .01)
       {
         current_height = lift_heights[0];
-        Hardware::vert_intake.stop_intake();
-      }
-      // As long as B is not being pressed, do not run the vert intake.
-      else
-      {
-        if(Hardware::partner.get_digital(DIGITAL_Y))
-          Hardware::vert_intake.takeIn();
-        else
-          Hardware::vert_intake.stop_intake();
       }
 
       // Run the lift manually using the left analog stick

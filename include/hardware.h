@@ -45,9 +45,9 @@ namespace Hardware
 
   extern HorizIntake horiz_intake;
 
-  extern Motor v_intake1;
-  extern Motor v_intake2;
-  extern Motor intake_door;
+  //extern Motor v_intake1;
+  //extern Motor v_intake2;
+  //extern Motor intake_door;
 
   extern VerticalIntake vert_intake;
   // static Vision camera;
