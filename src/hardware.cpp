@@ -12,8 +12,8 @@ Tank Drive:
   Right Back: 12, reversed
 
 Reverse Double 4 Bar:
-  left bottom: 9
-  left top: 10, reversed
+  left bottom: 9 reversed
+  left top: 10,
   right bottom: 1
   right top: 2, reversed
 
@@ -65,12 +65,12 @@ Motor Hardware::right_intake(14);
 
 HorizIntake Hardware::horiz_intake(Hardware::left_intake, Hardware::right_intake);
 
-Motor Hardware::v_intake1(17,0);
-Motor Hardware::v_intake2(18,0);
+//Motor Hardware::v_intake1(17,0);
+//Motor Hardware::v_intake2(18,0);
 
-Motor Hardware::intake_door(16,0);
+//Motor Hardware::intake_door(16,0);
 
-VerticalIntake Hardware::vert_intake(Hardware::v_intake1, Hardware::v_intake2, Hardware::intake_door);
+VerticalIntake Hardware::vert_intake(Hardware::solenoid);
 
 Controller Hardware::master(E_CONTROLLER_MASTER);
 Controller Hardware::partner(E_CONTROLLER_PARTNER);

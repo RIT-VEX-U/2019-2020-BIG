@@ -1,5 +1,7 @@
 #include "main.h"
 #include "hardware.h"
+#include "okapi/api.hpp"
+#include "okapi/pathfinder/include/pathfinder.h"
 
   double BLUE = 1.0;
   double RED = -1.0;
@@ -41,7 +43,7 @@ float turn_speed = 1;
 bool done_picking_up = false;
 
 uint32_t pick_up_vert_intake_time = 0;
-
+using namespace okapi;
 void pick_up()
 {
   if(done_picking_up == true)
@@ -50,19 +52,12 @@ void pick_up()
       Hardware::lift.lower(6000);
     else
       Hardware::lift.stop();
-
-    Hardware::vert_intake.stop_intake();
     return;
   }
 
-  //Position the robot so that the cube is ready to be sucked up
-  if (!Hardware::limit_switch.get_value())
+  if(pros::millis() - pick_up_vert_intake_time > .3 && pros::millis() - pick_up_vert_intake_time < .6)
   {
-    Hardware::lift.hold_pos(0.3);
-    if (pros::millis() - pick_up_vert_intake_time < 500)
-      Hardware::vert_intake.takeIn();
-    else
-      Hardware::vert_intake.stop_intake();
+    Hardware::lift.raise(8000);
   }
 
   //Drop lift, run intake to suck cube up
@@ -73,8 +68,6 @@ void pick_up()
       Hardware::lift.lower(6000);
     else
       Hardware::lift.stop();
-
-    Hardware::vert_intake.takeIn();
   }
 }
 
@@ -82,6 +75,67 @@ uint32_t back_up_timer = 0;
 uint32_t intake_timer = 0;
 
 int drop_stack_state_auto = 0;
+void pathfinder_test()
+{
+  Waypoint waypoint_list[] = 
+  {
+    {0, 0, d2r(0)},
+    {3, 0, d2r(0)}
+  };
+
+  TrajectoryCandidate candidate;
+
+  pathfinder_prepare(waypoint_list, 2, FIT_HERMITE_CUBIC, PATHFINDER_SAMPLES_LOW, .05, 10, 20, 200, &candidate);
+
+  Segment *center_trajectory;
+  Segment *l_trajectory;
+  Segment *r_trajectory;
+
+  int traj_len = sizeof(center_trajectory) / sizeof(Segment);
+
+  pathfinder_generate(&candidate, center_trajectory);
+
+  EncoderFollower l_path_follower, r_path_follower;
+
+  EncoderConfig enc_conf
+  {
+    0, imev5GreenTPR, 4, .1, 0, 0, 1.0/10.0, 0
+  };
+  
+  pathfinder_modify_tank(center_trajectory, traj_len, l_trajectory, r_trajectory, 11.5);
+
+  Hardware::left_middle.set_encoder_units(E_MOTOR_ENCODER_COUNTS);
+  Hardware::right_middle.set_encoder_units(E_MOTOR_ENCODER_COUNTS);
+
+  while(1)
+  {
+    double l_out = pathfinder_follow_encoder(enc_conf, &l_path_follower, l_trajectory, traj_len, Hardware::left_middle.get_position());
+    double r_out = pathfinder_follow_encoder(enc_conf, &r_path_follower, r_trajectory, traj_len, Hardware::right_middle.get_position());
+
+    l_out += (l_path_follower.heading - Hardware::imu.get_rotation()) * .1;
+    r_out -= (l_path_follower.heading - Hardware::imu.get_rotation()) * .1;
+
+    Hardware::drive_system.drive(l_out, r_out);
+  }
+  
+
+  return;
+
+  auto chassis = okapi::ChassisControllerBuilder()
+  .withMotors({20, 8, 19},{12, 7, 11})
+  .withDimensions(okapi::AbstractMotor::gearset::green, {{4, 11.5}, okapi::imev5GreenTPR})
+  .build();
+
+  auto profile_controller = okapi::AsyncMotionProfileControllerBuilder()
+  .withLimits({1.0, 2.0, 10.0})
+  .withOutput(chassis)
+  .buildMotionProfileController();
+
+  profile_controller->generatePath({{0_in, 0_in, 0_deg}, {12_in, 0_in, 0_deg}}, "A");
+  profile_controller->setTarget("A");
+  profile_controller->waitUntilSettled();
+
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -97,6 +151,11 @@ int drop_stack_state_auto = 0;
 void autonomous()
 {
 
+  //pathfinder_test();
+  //return;
+
+
+  Hardware::vert_intake.close();
   while (true)
   {
     pick_up();
@@ -131,7 +190,7 @@ void autonomous()
       if (pros::millis() - back_up_timer < 500)
         Hardware::drive_system.drive(0, 0);
       else if (Hardware::drive_system.drive_forward(28, drive_slow_speed))
-        auto_1_current = REVERSE2;
+        auto_1_current = TURN1;
 
       break;
     case TURN1:
@@ -166,7 +225,7 @@ void autonomous()
     case REVERSE2:
       // Begin reversing to drop off cubes
 
-      if (Hardware::drive_system.drive_forward(-20, drive_speed))
+      if (Hardware::drive_system.drive_forward(-36, drive_speed))
         auto_1_current = TURN3;
 
       break;
@@ -174,7 +233,7 @@ void autonomous()
       // Turn towards scoring zone
       Hardware::horiz_intake.run_intake(false, false);
 
-      if (Hardware::drive_system.turn_degrees((color * -130), turn_speed))
+      if (Hardware::drive_system.turn_degrees((color * -165), turn_speed))
       {
         auto_1_current = DRIVE3;
         intake_timer = pros::millis();
@@ -207,18 +266,10 @@ void autonomous()
         }
         Hardware::lift.lower(4000);
         break;
-      //Next, run the vertical intake down for a set time
-      case 1:
-        if (pros::millis() - intake_timer > 400)
-        {
-          Hardware::vert_intake.stop_intake();
-          drop_stack_state_auto++;
-        }
-        Hardware::vert_intake.drop();
-        break;
       // Last, open the doors
-      case 2:
-        if(Hardware::vert_intake.open())
+      case 1:
+        Hardware::vert_intake.open();
+        if(Hardware::vert_intake.is_open())
           auto_1_current = REVERSE_AWAY;
       break;
       }
