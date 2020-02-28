@@ -17,6 +17,7 @@ namespace Hardware
   extern pros::ADIDigitalOut solenoid;
 
   extern pros::ADIButton limit_switch;
+  extern pros::ADIAnalogIn line_tracker;
 
   extern pros::ADIButton right_button;
   extern pros::ADIButton left_button;

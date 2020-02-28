@@ -1,10 +1,27 @@
 #include "main.h"
 #include "hardware.h"
-#include "okapi/api.hpp"
-#include "okapi/pathfinder/include/pathfinder.h"
+#include "pathfinder_test.h"
 
-  double BLUE = 1.0;
-  double RED = -1.0;
+double BLUE = 1.0;
+double RED = -1.0;
+
+float auto_lift_hold_pos = 0;
+
+float drive_speed = .5;
+float drive_slow_speed = .15;
+float turn_speed = 1;
+bool done_picking_up = false;
+
+uint32_t pick_up_vert_intake_time = 0;
+
+const double color = RED;
+
+uint32_t back_up_timer = 0;
+uint32_t intake_timer = 0;
+
+int drop_stack_state_auto = 0;
+
+using namespace okapi;
 
 enum AUTO_1_STATE
 {
@@ -25,7 +42,107 @@ enum AUTO_1_STATE
 };
 
 AUTO_1_STATE auto_1_current = INIT;
-const double color = RED;
+
+enum AUTO_2_STATE
+{
+  AUTO2_INIT,
+  AUTO2_DRIVE1,
+  AUTO2_TURN1,
+  AUTO2_DRIVE2,
+  AUTO2_DROP1,
+  AUTO2_REVERSE_AWAY,
+  AUTO2_END
+};
+
+AUTO_2_STATE auto_2_current = AUTO2_INIT;
+
+void auto_2()
+{
+  while(!Hardware::drive_system.drive_forward(-24, drive_speed)){pros::delay(50);}
+  while(!Hardware::drive_system.drive_forward(24, drive_speed)){pros::delay(50);}
+  Hardware::drive_system.drive(0,0);
+
+  return;
+  Hardware::solenoid.set_value(0);
+
+  while (1)
+  {
+    switch (auto_2_current)
+    {
+    case AUTO2_INIT:
+
+      auto_2_current = AUTO2_DRIVE1;
+      break;
+    case AUTO2_DRIVE1:
+
+      if (Hardware::drive_system.drive_forward(34, drive_slow_speed) && Hardware::line_tracker.get_value() > 1000)
+        auto_2_current = AUTO2_TURN1;
+      else if(Hardware::line_tracker.get_value() < 1000 || Hardware::lift.getCurrPos() < 1)
+        Hardware::drive_system.drive(0,0);
+
+      if (Hardware::line_tracker.get_value() < 1000 && pros::millis() - intake_timer > 1700)
+      {
+        intake_timer = pros::millis();
+      }
+      else if (pros::millis() - intake_timer < 1400)
+      {
+        if (Hardware::lift.getCurrPos() > -.1)
+          Hardware::lift.lower(10000);
+        else
+          Hardware::lift.lower(0);
+      }
+      else
+      {
+        if(Hardware::lift.getCurrPos() < 1.5)
+          Hardware::lift.raise(10000);
+        else
+          Hardware::lift.hold_pos(1.5);
+      }
+
+      break;
+    case AUTO2_TURN1:
+      if(Hardware::drive_system.turn_degrees( color * 135, turn_speed))
+        auto_2_current = AUTO2_DRIVE2;
+
+      if(Hardware::lift.getCurrPos() > .1)
+        Hardware::lift.lower(3000);
+      else
+        Hardware::lift.hold_pos(.1);
+
+      break;
+    case AUTO2_DRIVE2:
+      if(Hardware::drive_system.drive_forward(35, drive_speed))
+        auto_2_current = AUTO2_DROP1;
+
+      Hardware::lift.hold_pos(.1);
+
+      break;
+    case AUTO2_DROP1:
+      if(Hardware::lift.getCurrPos() < .05)
+      {
+        Hardware::lift.lower(0);
+        Hardware::solenoid.set_value(1);
+        
+        pros::delay(500);
+        auto_2_current = AUTO2_REVERSE_AWAY;
+      }
+      
+      Hardware::lift.lower(3000);
+      break;
+    case AUTO2_REVERSE_AWAY:
+
+      if(Hardware::drive_system.drive_forward(-12, drive_speed))
+        auto_2_current = AUTO2_END;
+
+      break;
+    case AUTO2_END:
+      Hardware::drive_system.drive(0,0);
+      Hardware::solenoid.set_value(0);
+      break;
+    }
+    pros::delay(50);
+  }
+}
 
 enum AUTO_LIFT_STATE
 {
@@ -35,18 +152,10 @@ enum AUTO_LIFT_STATE
 };
 
 AUTO_LIFT_STATE auto_lift_current = HOLD;
-float auto_lift_hold_pos = 0;
 
-float drive_speed = .5;
-float drive_slow_speed = .15;
-float turn_speed = 1;
-bool done_picking_up = false;
-
-uint32_t pick_up_vert_intake_time = 0;
-using namespace okapi;
 void pick_up()
 {
-  if(done_picking_up == true)
+  if (done_picking_up == true)
   {
     if (Hardware::lift.getCurrPos() >= .1)
       Hardware::lift.lower(6000);
@@ -55,7 +164,7 @@ void pick_up()
     return;
   }
 
-  if(pros::millis() - pick_up_vert_intake_time > .3 && pros::millis() - pick_up_vert_intake_time < .6)
+  if (pros::millis() - pick_up_vert_intake_time > .3 && pros::millis() - pick_up_vert_intake_time < .6)
   {
     Hardware::lift.raise(8000);
   }
@@ -71,72 +180,6 @@ void pick_up()
   }
 }
 
-uint32_t back_up_timer = 0;
-uint32_t intake_timer = 0;
-
-int drop_stack_state_auto = 0;
-void pathfinder_test()
-{
-  Waypoint waypoint_list[] = 
-  {
-    {0, 0, d2r(0)},
-    {3, 0, d2r(0)}
-  };
-
-  TrajectoryCandidate candidate;
-
-  pathfinder_prepare(waypoint_list, 2, FIT_HERMITE_CUBIC, PATHFINDER_SAMPLES_LOW, .05, 10, 20, 200, &candidate);
-
-  Segment *center_trajectory;
-  Segment *l_trajectory;
-  Segment *r_trajectory;
-
-  int traj_len = sizeof(center_trajectory) / sizeof(Segment);
-
-  pathfinder_generate(&candidate, center_trajectory);
-
-  EncoderFollower l_path_follower, r_path_follower;
-
-  EncoderConfig enc_conf
-  {
-    0, imev5GreenTPR, 4, .1, 0, 0, 1.0/10.0, 0
-  };
-  
-  pathfinder_modify_tank(center_trajectory, traj_len, l_trajectory, r_trajectory, 11.5);
-
-  Hardware::left_middle.set_encoder_units(E_MOTOR_ENCODER_COUNTS);
-  Hardware::right_middle.set_encoder_units(E_MOTOR_ENCODER_COUNTS);
-
-  while(1)
-  {
-    double l_out = pathfinder_follow_encoder(enc_conf, &l_path_follower, l_trajectory, traj_len, Hardware::left_middle.get_position());
-    double r_out = pathfinder_follow_encoder(enc_conf, &r_path_follower, r_trajectory, traj_len, Hardware::right_middle.get_position());
-
-    l_out += (l_path_follower.heading - Hardware::imu.get_rotation()) * .1;
-    r_out -= (l_path_follower.heading - Hardware::imu.get_rotation()) * .1;
-
-    Hardware::drive_system.drive(l_out, r_out);
-  }
-  
-
-  return;
-
-  auto chassis = okapi::ChassisControllerBuilder()
-  .withMotors({20, 8, 19},{12, 7, 11})
-  .withDimensions(okapi::AbstractMotor::gearset::green, {{4, 11.5}, okapi::imev5GreenTPR})
-  .build();
-
-  auto profile_controller = okapi::AsyncMotionProfileControllerBuilder()
-  .withLimits({1.0, 2.0, 10.0})
-  .withOutput(chassis)
-  .buildMotionProfileController();
-
-  profile_controller->generatePath({{0_in, 0_in, 0_deg}, {12_in, 0_in, 0_deg}}, "A");
-  profile_controller->setTarget("A");
-  profile_controller->waitUntilSettled();
-
-}
-
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -150,10 +193,12 @@ void pathfinder_test()
  */
 void autonomous()
 {
-
-  //pathfinder_test();
+  //auto_2();
   //return;
 
+
+  pathfinder_test();
+  return;
 
   Hardware::vert_intake.close();
   while (true)
@@ -204,7 +249,7 @@ void autonomous()
       // Collect the single Q cube
 
       Hardware::horiz_intake.run_intake(true, false);
-      if (Hardware::drive_system.drive_forward(11,  drive_slow_speed))
+      if (Hardware::drive_system.drive_forward(11, drive_slow_speed))
         auto_1_current = REVERSE1;
 
       break;
@@ -269,20 +314,20 @@ void autonomous()
       // Last, open the doors
       case 1:
         Hardware::vert_intake.open();
-        if(Hardware::vert_intake.is_open())
+        if (Hardware::vert_intake.is_open())
           auto_1_current = REVERSE_AWAY;
-      break;
+        break;
       }
 
       break;
     case REVERSE_AWAY:
       // Reverse away from the stacked cubes to get credit for the drop
-      if(Hardware::drive_system.drive_forward(-10, drive_speed))
+      if (Hardware::drive_system.drive_forward(-10, drive_speed))
         auto_1_current = END;
       break;
     case END:
       // Stop motors and return from function.
-      Hardware::drive_system.drive(0,0);
+      Hardware::drive_system.drive(0, 0);
       return;
     }
 

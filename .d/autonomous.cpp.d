@@ -87,7 +87,19 @@ bin/autonomous.cpp.o: src/autonomous.cpp include/main.h include/api.h \
  include/subsystems/rd4Bar.hpp include/subsystems/horiz_intake.hpp \
  include/pros/motors.hpp include/subsystems/vertical_intake.hpp \
  include/pros/apix.h include/config.h include/hardware.h \
- include/okapi/api.hpp \
+ include/utils/spline_path.hpp \
+ include/okapi/pathfinder/include/pathfinder.h \
+ include/okapi/pathfinder/include/pathfinder/mathutil.h \
+ include/okapi/pathfinder/include/pathfinder/lib.h \
+ include/okapi/pathfinder/include/pathfinder/structs.h \
+ include/okapi/pathfinder/include/pathfinder/fit.h \
+ include/okapi/pathfinder/include/pathfinder/spline.h \
+ include/okapi/pathfinder/include/pathfinder/trajectory.h \
+ include/okapi/pathfinder/include/pathfinder/modifiers/tank.h \
+ include/okapi/pathfinder/include/pathfinder/modifiers/swerve.h \
+ include/okapi/pathfinder/include/pathfinder/followers/encoder.h \
+ include/okapi/pathfinder/include/pathfinder/followers/distance.h \
+ include/okapi/pathfinder/include/pathfinder/io.h include/okapi/api.hpp \
  include/okapi/api/chassis/controller/chassisControllerIntegrated.hpp \
  include/okapi/api/chassis/controller/chassisController.hpp \
  include/okapi/api/chassis/controller/chassisScales.hpp \
@@ -126,18 +138,6 @@ bin/autonomous.cpp.o: src/autonomous.cpp include/main.h include/api.h \
  include/okapi/api/control/async/asyncLinearMotionProfileController.hpp \
  include/okapi/api/control/util/pathfinderUtil.hpp \
  include/okapi/api/units/QAngularSpeed.hpp \
- include/okapi/pathfinder/include/pathfinder.h \
- include/okapi/pathfinder/include/pathfinder/mathutil.h \
- include/okapi/pathfinder/include/pathfinder/lib.h \
- include/okapi/pathfinder/include/pathfinder/structs.h \
- include/okapi/pathfinder/include/pathfinder/fit.h \
- include/okapi/pathfinder/include/pathfinder/spline.h \
- include/okapi/pathfinder/include/pathfinder/trajectory.h \
- include/okapi/pathfinder/include/pathfinder/modifiers/tank.h \
- include/okapi/pathfinder/include/pathfinder/modifiers/swerve.h \
- include/okapi/pathfinder/include/pathfinder/followers/encoder.h \
- include/okapi/pathfinder/include/pathfinder/followers/distance.h \
- include/okapi/pathfinder/include/pathfinder/io.h \
  include/okapi/api/control/async/asyncMotionProfileController.hpp \
  include/okapi/api/control/async/asyncPosPidController.hpp \
  include/okapi/api/control/async/asyncWrapper.hpp \
@@ -184,7 +184,8 @@ bin/autonomous.cpp.o: src/autonomous.cpp include/main.h include/api.h \
  include/okapi/api/units/QMass.hpp include/okapi/api/units/QJerk.hpp \
  include/okapi/api/units/QPressure.hpp \
  include/okapi/api/units/QTorque.hpp include/okapi/api/units/QVolume.hpp \
- include/okapi/impl/util/rate.hpp
+ include/okapi/impl/util/rate.hpp include/subsystems/tank_drive.hpp \
+ include/pathfinder_test.h include/okapi/pathfinder/include/pathfinder.h
 
 include/main.h:
 
@@ -510,6 +511,32 @@ include/config.h:
 
 include/hardware.h:
 
+include/utils/spline_path.hpp:
+
+include/okapi/pathfinder/include/pathfinder.h:
+
+include/okapi/pathfinder/include/pathfinder/mathutil.h:
+
+include/okapi/pathfinder/include/pathfinder/lib.h:
+
+include/okapi/pathfinder/include/pathfinder/structs.h:
+
+include/okapi/pathfinder/include/pathfinder/fit.h:
+
+include/okapi/pathfinder/include/pathfinder/spline.h:
+
+include/okapi/pathfinder/include/pathfinder/trajectory.h:
+
+include/okapi/pathfinder/include/pathfinder/modifiers/tank.h:
+
+include/okapi/pathfinder/include/pathfinder/modifiers/swerve.h:
+
+include/okapi/pathfinder/include/pathfinder/followers/encoder.h:
+
+include/okapi/pathfinder/include/pathfinder/followers/distance.h:
+
+include/okapi/pathfinder/include/pathfinder/io.h:
+
 include/okapi/api.hpp:
 
 include/okapi/api/chassis/controller/chassisControllerIntegrated.hpp:
@@ -591,30 +618,6 @@ include/okapi/api/control/async/asyncLinearMotionProfileController.hpp:
 include/okapi/api/control/util/pathfinderUtil.hpp:
 
 include/okapi/api/units/QAngularSpeed.hpp:
-
-include/okapi/pathfinder/include/pathfinder.h:
-
-include/okapi/pathfinder/include/pathfinder/mathutil.h:
-
-include/okapi/pathfinder/include/pathfinder/lib.h:
-
-include/okapi/pathfinder/include/pathfinder/structs.h:
-
-include/okapi/pathfinder/include/pathfinder/fit.h:
-
-include/okapi/pathfinder/include/pathfinder/spline.h:
-
-include/okapi/pathfinder/include/pathfinder/trajectory.h:
-
-include/okapi/pathfinder/include/pathfinder/modifiers/tank.h:
-
-include/okapi/pathfinder/include/pathfinder/modifiers/swerve.h:
-
-include/okapi/pathfinder/include/pathfinder/followers/encoder.h:
-
-include/okapi/pathfinder/include/pathfinder/followers/distance.h:
-
-include/okapi/pathfinder/include/pathfinder/io.h:
 
 include/okapi/api/control/async/asyncMotionProfileController.hpp:
 
@@ -715,3 +718,9 @@ include/okapi/api/units/QTorque.hpp:
 include/okapi/api/units/QVolume.hpp:
 
 include/okapi/impl/util/rate.hpp:
+
+include/subsystems/tank_drive.hpp:
+
+include/pathfinder_test.h:
+
+include/okapi/pathfinder/include/pathfinder.h:

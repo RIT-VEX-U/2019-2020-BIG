@@ -1,6 +1,25 @@
-bin/initialize.cpp.o: src/initialize.cpp include/main.h include/api.h \
- include/pros/adi.h include/pros/colors.h include/pros/imu.h \
- include/pros/llemu.h include/display/lvgl.h include/display/lv_version.h \
+bin/utils/spline_path.cpp.o: src/utils/spline_path.cpp \
+ include/utils/spline_path.hpp \
+ include/okapi/pathfinder/include/pathfinder.h \
+ include/okapi/pathfinder/include/pathfinder/mathutil.h \
+ include/okapi/pathfinder/include/pathfinder/lib.h \
+ include/okapi/pathfinder/include/pathfinder/structs.h \
+ include/okapi/pathfinder/include/pathfinder/fit.h \
+ include/okapi/pathfinder/include/pathfinder/spline.h \
+ include/okapi/pathfinder/include/pathfinder/trajectory.h \
+ include/okapi/pathfinder/include/pathfinder/modifiers/tank.h \
+ include/okapi/pathfinder/include/pathfinder/modifiers/swerve.h \
+ include/okapi/pathfinder/include/pathfinder/followers/encoder.h \
+ include/okapi/pathfinder/include/pathfinder/followers/distance.h \
+ include/okapi/pathfinder/include/pathfinder/io.h include/okapi/api.hpp \
+ include/okapi/api/chassis/controller/chassisControllerIntegrated.hpp \
+ include/okapi/api/chassis/controller/chassisController.hpp \
+ include/okapi/api/chassis/controller/chassisScales.hpp \
+ include/okapi/api/units/QAngle.hpp include/okapi/api/units/RQuantity.hpp \
+ include/okapi/api/units/QLength.hpp include/okapi/api/util/logging.hpp \
+ include/okapi/api/coreProsAPI.hpp include/api.h include/pros/adi.h \
+ include/pros/colors.h include/pros/imu.h include/pros/llemu.h \
+ include/display/lvgl.h include/display/lv_version.h \
  include/display/lv_misc/lv_log.h include/display/lv_conf.h \
  include/display/lv_conf_checker.h include/display/lv_misc/lv_task.h \
  include/display/lv_misc/lv_mem.h include/display/lv_misc/lv_log.h \
@@ -67,43 +86,16 @@ bin/initialize.cpp.o: src/initialize.cpp include/main.h include/api.h \
  include/pros/llemu.h include/pros/misc.hpp include/pros/misc.h \
  include/pros/motors.hpp include/pros/motors.h include/pros/rtos.hpp \
  include/pros/rtos.h include/pros/vision.hpp include/pros/vision.h \
- include/hardware.h include/subsystems/tank_drive.hpp \
- include/okapi/impl/device/motor/motorGroup.hpp \
+ include/pros/apix.h include/pros/serial.h include/pros/serial.hpp \
+ include/okapi/api/util/abstractTimer.hpp \
+ include/okapi/api/units/QFrequency.hpp include/okapi/api/units/QTime.hpp \
+ include/okapi/api/util/mathUtil.hpp \
  include/okapi/api/device/motor/abstractMotor.hpp \
  include/okapi/api/control/controllerOutput.hpp \
  include/okapi/api/device/rotarysensor/continuousRotarySensor.hpp \
  include/okapi/api/device/rotarysensor/rotarySensor.hpp \
  include/okapi/api/control/controllerInput.hpp \
- include/okapi/api/coreProsAPI.hpp include/api.h include/pros/apix.h \
- include/pros/serial.h include/pros/serial.hpp \
- include/okapi/api/util/logging.hpp \
- include/okapi/api/util/abstractTimer.hpp \
- include/okapi/api/units/QFrequency.hpp \
- include/okapi/api/units/RQuantity.hpp include/okapi/api/units/QTime.hpp \
- include/okapi/api/util/mathUtil.hpp include/okapi/impl/util/timer.hpp \
- include/okapi/impl/device/motor/motor.hpp \
- include/okapi/impl/device/rotarysensor/adiGyro.hpp include/utils/pid.hpp \
- include/logging.hpp include/main.h include/pros/imu.hpp \
- include/subsystems/rd4Bar.hpp include/subsystems/horiz_intake.hpp \
- include/pros/motors.hpp include/subsystems/vertical_intake.hpp \
- include/pros/apix.h include/config.h include/hardware.h \
- include/utils/spline_path.hpp \
- include/okapi/pathfinder/include/pathfinder.h \
- include/okapi/pathfinder/include/pathfinder/mathutil.h \
- include/okapi/pathfinder/include/pathfinder/lib.h \
- include/okapi/pathfinder/include/pathfinder/structs.h \
- include/okapi/pathfinder/include/pathfinder/fit.h \
- include/okapi/pathfinder/include/pathfinder/spline.h \
- include/okapi/pathfinder/include/pathfinder/trajectory.h \
- include/okapi/pathfinder/include/pathfinder/modifiers/tank.h \
- include/okapi/pathfinder/include/pathfinder/modifiers/swerve.h \
- include/okapi/pathfinder/include/pathfinder/followers/encoder.h \
- include/okapi/pathfinder/include/pathfinder/followers/distance.h \
- include/okapi/pathfinder/include/pathfinder/io.h include/okapi/api.hpp \
- include/okapi/api/chassis/controller/chassisControllerIntegrated.hpp \
- include/okapi/api/chassis/controller/chassisController.hpp \
- include/okapi/api/chassis/controller/chassisScales.hpp \
- include/okapi/api/units/QAngle.hpp include/okapi/api/units/QLength.hpp \
+ include/okapi/impl/util/timer.hpp \
  include/okapi/api/chassis/model/chassisModel.hpp \
  include/okapi/api/chassis/model/readOnlyChassisModel.hpp \
  include/okapi/api/control/async/asyncPosIntegratedController.hpp \
@@ -132,6 +124,8 @@ bin/initialize.cpp.o: src/initialize.cpp include/main.h include/api.h \
  include/okapi/api/chassis/model/threeEncoderXDriveModel.hpp \
  include/okapi/api/chassis/model/xDriveModel.hpp \
  include/okapi/impl/chassis/controller/chassisControllerBuilder.hpp \
+ include/okapi/impl/device/motor/motor.hpp \
+ include/okapi/impl/device/motor/motorGroup.hpp \
  include/okapi/impl/device/rotarysensor/adiEncoder.hpp \
  include/okapi/impl/device/rotarysensor/integratedEncoder.hpp \
  include/okapi/impl/util/timeUtilFactory.hpp \
@@ -171,6 +165,7 @@ bin/initialize.cpp.o: src/initialize.cpp include/main.h include/api.h \
  include/okapi/impl/device/button/controllerButton.hpp \
  include/okapi/impl/device/controllerUtil.hpp \
  include/okapi/impl/device/controller.hpp \
+ include/okapi/impl/device/rotarysensor/adiGyro.hpp \
  include/okapi/impl/device/rotarysensor/potentiometer.hpp \
  include/okapi/api/filter/averageFilter.hpp \
  include/okapi/api/filter/demaFilter.hpp \
@@ -184,9 +179,57 @@ bin/initialize.cpp.o: src/initialize.cpp include/main.h include/api.h \
  include/okapi/api/units/QMass.hpp include/okapi/api/units/QJerk.hpp \
  include/okapi/api/units/QPressure.hpp \
  include/okapi/api/units/QTorque.hpp include/okapi/api/units/QVolume.hpp \
- include/okapi/impl/util/rate.hpp include/subsystems/tank_drive.hpp
+ include/okapi/impl/util/rate.hpp include/pros/imu.hpp \
+ include/pros/motors.hpp include/subsystems/tank_drive.hpp \
+ include/utils/pid.hpp include/logging.hpp include/main.h include/api.h \
+ include/hardware.h include/subsystems/tank_drive.hpp \
+ include/subsystems/rd4Bar.hpp include/subsystems/horiz_intake.hpp \
+ include/subsystems/vertical_intake.hpp include/pros/apix.h \
+ include/config.h include/hardware.h include/utils/spline_path.hpp
 
-include/main.h:
+include/utils/spline_path.hpp:
+
+include/okapi/pathfinder/include/pathfinder.h:
+
+include/okapi/pathfinder/include/pathfinder/mathutil.h:
+
+include/okapi/pathfinder/include/pathfinder/lib.h:
+
+include/okapi/pathfinder/include/pathfinder/structs.h:
+
+include/okapi/pathfinder/include/pathfinder/fit.h:
+
+include/okapi/pathfinder/include/pathfinder/spline.h:
+
+include/okapi/pathfinder/include/pathfinder/trajectory.h:
+
+include/okapi/pathfinder/include/pathfinder/modifiers/tank.h:
+
+include/okapi/pathfinder/include/pathfinder/modifiers/swerve.h:
+
+include/okapi/pathfinder/include/pathfinder/followers/encoder.h:
+
+include/okapi/pathfinder/include/pathfinder/followers/distance.h:
+
+include/okapi/pathfinder/include/pathfinder/io.h:
+
+include/okapi/api.hpp:
+
+include/okapi/api/chassis/controller/chassisControllerIntegrated.hpp:
+
+include/okapi/api/chassis/controller/chassisController.hpp:
+
+include/okapi/api/chassis/controller/chassisScales.hpp:
+
+include/okapi/api/units/QAngle.hpp:
+
+include/okapi/api/units/RQuantity.hpp:
+
+include/okapi/api/units/QLength.hpp:
+
+include/okapi/api/util/logging.hpp:
+
+include/okapi/api/coreProsAPI.hpp:
 
 include/api.h:
 
@@ -444,11 +487,19 @@ include/pros/vision.hpp:
 
 include/pros/vision.h:
 
-include/hardware.h:
+include/pros/apix.h:
 
-include/subsystems/tank_drive.hpp:
+include/pros/serial.h:
 
-include/okapi/impl/device/motor/motorGroup.hpp:
+include/pros/serial.hpp:
+
+include/okapi/api/util/abstractTimer.hpp:
+
+include/okapi/api/units/QFrequency.hpp:
+
+include/okapi/api/units/QTime.hpp:
+
+include/okapi/api/util/mathUtil.hpp:
 
 include/okapi/api/device/motor/abstractMotor.hpp:
 
@@ -460,93 +511,7 @@ include/okapi/api/device/rotarysensor/rotarySensor.hpp:
 
 include/okapi/api/control/controllerInput.hpp:
 
-include/okapi/api/coreProsAPI.hpp:
-
-include/api.h:
-
-include/pros/apix.h:
-
-include/pros/serial.h:
-
-include/pros/serial.hpp:
-
-include/okapi/api/util/logging.hpp:
-
-include/okapi/api/util/abstractTimer.hpp:
-
-include/okapi/api/units/QFrequency.hpp:
-
-include/okapi/api/units/RQuantity.hpp:
-
-include/okapi/api/units/QTime.hpp:
-
-include/okapi/api/util/mathUtil.hpp:
-
 include/okapi/impl/util/timer.hpp:
-
-include/okapi/impl/device/motor/motor.hpp:
-
-include/okapi/impl/device/rotarysensor/adiGyro.hpp:
-
-include/utils/pid.hpp:
-
-include/logging.hpp:
-
-include/main.h:
-
-include/pros/imu.hpp:
-
-include/subsystems/rd4Bar.hpp:
-
-include/subsystems/horiz_intake.hpp:
-
-include/pros/motors.hpp:
-
-include/subsystems/vertical_intake.hpp:
-
-include/pros/apix.h:
-
-include/config.h:
-
-include/hardware.h:
-
-include/utils/spline_path.hpp:
-
-include/okapi/pathfinder/include/pathfinder.h:
-
-include/okapi/pathfinder/include/pathfinder/mathutil.h:
-
-include/okapi/pathfinder/include/pathfinder/lib.h:
-
-include/okapi/pathfinder/include/pathfinder/structs.h:
-
-include/okapi/pathfinder/include/pathfinder/fit.h:
-
-include/okapi/pathfinder/include/pathfinder/spline.h:
-
-include/okapi/pathfinder/include/pathfinder/trajectory.h:
-
-include/okapi/pathfinder/include/pathfinder/modifiers/tank.h:
-
-include/okapi/pathfinder/include/pathfinder/modifiers/swerve.h:
-
-include/okapi/pathfinder/include/pathfinder/followers/encoder.h:
-
-include/okapi/pathfinder/include/pathfinder/followers/distance.h:
-
-include/okapi/pathfinder/include/pathfinder/io.h:
-
-include/okapi/api.hpp:
-
-include/okapi/api/chassis/controller/chassisControllerIntegrated.hpp:
-
-include/okapi/api/chassis/controller/chassisController.hpp:
-
-include/okapi/api/chassis/controller/chassisScales.hpp:
-
-include/okapi/api/units/QAngle.hpp:
-
-include/okapi/api/units/QLength.hpp:
 
 include/okapi/api/chassis/model/chassisModel.hpp:
 
@@ -605,6 +570,10 @@ include/okapi/api/chassis/model/threeEncoderXDriveModel.hpp:
 include/okapi/api/chassis/model/xDriveModel.hpp:
 
 include/okapi/impl/chassis/controller/chassisControllerBuilder.hpp:
+
+include/okapi/impl/device/motor/motor.hpp:
+
+include/okapi/impl/device/motor/motorGroup.hpp:
 
 include/okapi/impl/device/rotarysensor/adiEncoder.hpp:
 
@@ -684,6 +653,8 @@ include/okapi/impl/device/controllerUtil.hpp:
 
 include/okapi/impl/device/controller.hpp:
 
+include/okapi/impl/device/rotarysensor/adiGyro.hpp:
+
 include/okapi/impl/device/rotarysensor/potentiometer.hpp:
 
 include/okapi/api/filter/averageFilter.hpp:
@@ -718,4 +689,34 @@ include/okapi/api/units/QVolume.hpp:
 
 include/okapi/impl/util/rate.hpp:
 
+include/pros/imu.hpp:
+
+include/pros/motors.hpp:
+
 include/subsystems/tank_drive.hpp:
+
+include/utils/pid.hpp:
+
+include/logging.hpp:
+
+include/main.h:
+
+include/api.h:
+
+include/hardware.h:
+
+include/subsystems/tank_drive.hpp:
+
+include/subsystems/rd4Bar.hpp:
+
+include/subsystems/horiz_intake.hpp:
+
+include/subsystems/vertical_intake.hpp:
+
+include/pros/apix.h:
+
+include/config.h:
+
+include/hardware.h:
+
+include/utils/spline_path.hpp:

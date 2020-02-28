@@ -1,5 +1,16 @@
 #include "subsystems/tank_drive.hpp"
 
+void TankDrive::stop()
+{
+  left_front.move_velocity(0);
+  left_middle.move_velocity(0);
+  left_rear.move_velocity(0);
+
+  right_front.move_velocity(0);
+  right_middle.move_velocity(0);
+  right_rear.move_velocity(0);
+}
+
 /**
 Drive the robot with differential drive.
 Left axis is the Y axis on the left joystick, same for the right joystick.
@@ -9,7 +20,7 @@ motors input between -(min rpm) and +(max rpm) based on the gearset used.
 */
 void TankDrive::drive(double left_in, double right_in)
 {
-  double drive_mod = fabs(sin((left_in + right_in) * PI / 4.0));
+  double drive_mod = fabs(sin((left_in + right_in) * _PI / 4.0));
 
   double lf_out = left_in, lr_out = left_in;
   double rf_out = right_in, rr_out = right_in;
@@ -67,7 +78,7 @@ bool TankDrive::drive_forward(double inches, double percent_speed)
     initialize_func = true;
   }
 
-  drive_pid->update(left_front.get_position() * PI * config->wheel_size);
+  drive_pid->update(left_front.get_position() * _PI * config->wheel_size);
   drive(drive_pid->get(), drive_pid->get());
 
 

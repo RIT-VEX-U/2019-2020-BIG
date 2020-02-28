@@ -37,9 +37,10 @@ using namespace pros;
 okapi::ADIGyro Hardware::gyro(1, .1);
 
 pros::ADIDigitalOut Hardware::solenoid('H');
-pros::Imu Hardware::imu(15);
+pros::Imu Hardware::imu(13);
 
 ADIButton Hardware::limit_switch('B');
+ADIAnalogIn Hardware::line_tracker('C');
 
 ADIButton Hardware::right_button('G');
 ADIButton Hardware::left_button('F');
@@ -60,7 +61,7 @@ okapi::Motor Hardware::lift4(1);
 
 rd4Bar Hardware::lift({lift1, lift4}, {lift2, lift3}, 50, &config::lift_pid_config);  //6 & 7 Reversed
 
-Motor Hardware::left_intake(13);
+Motor Hardware::left_intake(15);
 Motor Hardware::right_intake(14);
 
 HorizIntake Hardware::horiz_intake(Hardware::left_intake, Hardware::right_intake);

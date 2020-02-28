@@ -9,7 +9,7 @@
 #include "logging.hpp"
 #include "pros/imu.hpp"
 
-#define PI 3.1415926536
+#define _PI 3.1415926536
 
 class TankDrive
 {
@@ -56,6 +56,8 @@ private:
 
 public:
 
+  void stop();
+  
   /**
   Drive the robot with differential drive.
   Left axis is the Y axis on the left joystick, same for the right joystick.
