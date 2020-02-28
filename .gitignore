@@ -1,4 +1,6 @@
 bin/*
 .vscode/*
 
+.d/*
+
 compile_commands.json
