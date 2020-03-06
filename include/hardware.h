@@ -44,6 +44,8 @@ namespace Hardware
   extern Motor left_intake;
   extern Motor right_intake;
 
+  extern Motor intake_puller;
+
   extern HorizIntake horiz_intake;
 
   //extern Motor v_intake1;

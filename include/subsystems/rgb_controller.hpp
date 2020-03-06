@@ -1,4 +1,4 @@
-#ifndef _RGB_CON__
+#ifndef _RGB_CON_
 #define _RGB_CON_
 
 #include "pros/adi.hpp"

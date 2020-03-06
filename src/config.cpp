@@ -34,15 +34,15 @@ void config::initialize()
     drive_config.wheel_size = 4;
     drive_config.omni_config = TankDrive::omni_config_t::center_dr;
 
-    motion_profile.drive_p = .01;
+    motion_profile.drive_p = .05;
     motion_profile.drive_i = 0;
-    motion_profile.drive_d = 0;
-    motion_profile.turn_p = 0;//.005;
+    motion_profile.drive_d = .0;
+    motion_profile.turn_p = .003;
 
-    motion_profile.max_v = 6;
-    motion_profile.max_a = 5;
+    motion_profile.max_v = 8;
+    motion_profile.max_a = 3;
 
-    motion_profile.kv = 1.0/6.0;
+    motion_profile.kv = 1.0/40.0;//motion_profile.max_v;
     motion_profile.ka = 0;
 
     motion_profile.dt = .02;

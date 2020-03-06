@@ -60,10 +60,16 @@ bool SplinePath::run_path(Waypoint *point_list, int list_length)
   double lout = pathfinder_follow_encoder(enc_conf, left_follower, left_traj, candidate.length, l_enc->get_position());
   double rout = pathfinder_follow_encoder(enc_conf, right_follower, right_traj, candidate.length, r_enc->get_position());
 
-  double heading_error = r2d(left_follower->heading) - (imu->get_rotation() - reset_heading);
+  double in_heading = r2d(left_follower->heading);
+  if(in_heading > 180)
+    in_heading -= 360;
+  double heading_error = in_heading + (imu->get_rotation() - reset_heading);
 
-  lout += motion_profile->turn_p * heading_error;
-  rout -= motion_profile->turn_p * heading_error;
+  lout -= motion_profile->turn_p * heading_error;
+  rout += motion_profile->turn_p * heading_error;
+
+  pros::lcd::print(1, "heading: %f", heading_error);
+  pros::lcd::print(2, "orig: %f", in_heading);
 
   pros::lcd::print(0, "L: %f, R: %f", lout, rout);
 

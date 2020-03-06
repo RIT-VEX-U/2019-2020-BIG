@@ -40,7 +40,7 @@ pros::ADIDigitalOut Hardware::solenoid('H');
 pros::Imu Hardware::imu(13);
 
 ADIButton Hardware::limit_switch('B');
-ADIAnalogIn Hardware::line_tracker('C');
+// ADIAnalogIn Hardware::line_tracker('C');
 
 ADIButton Hardware::right_button('G');
 ADIButton Hardware::left_button('F');
@@ -64,7 +64,9 @@ rd4Bar Hardware::lift({lift1, lift4}, {lift2, lift3}, 50, &config::lift_pid_conf
 Motor Hardware::left_intake(15);
 Motor Hardware::right_intake(14);
 
-HorizIntake Hardware::horiz_intake(Hardware::left_intake, Hardware::right_intake);
+Motor Hardware::intake_puller(16);
+
+HorizIntake Hardware::horiz_intake(Hardware::left_intake, Hardware::right_intake, Hardware::intake_puller);
 
 //Motor Hardware::v_intake1(17,0);
 //Motor Hardware::v_intake2(18,0);

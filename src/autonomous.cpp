@@ -14,7 +14,7 @@ bool done_picking_up = false;
 
 uint32_t pick_up_vert_intake_time = 0;
 
-const double color = RED;
+const double color = BLUE;
 
 uint32_t back_up_timer = 0;
 uint32_t intake_timer = 0;
@@ -51,93 +51,154 @@ enum AUTO_2_STATE
   AUTO2_DRIVE2,
   AUTO2_DROP1,
   AUTO2_REVERSE_AWAY,
+  AUTO2_TURN2,
+  AUTO2_DRIVE_TO_TOWER,
   AUTO2_END
 };
+
+int lift_val = 0;
+int lower_time = 0;
+bool disable_pickup = false;
+
+void control_lift()
+{
+  // If the line tracker sees something, stop the robot, lower the lift and raise it up based on a timer.
+  // if (Hardware::line_tracker.get() < 1000 && pros::millis() - intake_timer > lower_time)
+  // {
+  //   intake_timer = pros::millis();
+  // }
+  // else if (pros::millis() - intake_timer < (lower_time)-800)
+  // {
+  //   lift_val = 0;
+  // }
+
+  if (Hardware::lift.getCurrPos() < lift_val)
+    Hardware::lift.raise(12000);
+  else if (lift_val == 0 && Hardware::lift.getCurrPos() > .05)
+    Hardware::lift.lower(6000);
+  else
+    Hardware::lift.hold_pos(lift_val);
+}
 
 AUTO_2_STATE auto_2_current = AUTO2_INIT;
 
 void auto_2()
 {
-  while(!Hardware::drive_system.drive_forward(-24, drive_speed)){pros::delay(50);}
-  while(!Hardware::drive_system.drive_forward(24, drive_speed)){pros::delay(50);}
-  Hardware::drive_system.drive(0,0);
+  // while(!Hardware::drive_system.drive_forward(-24, drive_speed)){pros::delay(50);}
+  // while(!Hardware::drive_system.drive_forward(24, drive_speed)){pros::delay(50);}
+  // Hardware::drive_system.drive(0,0);
+  // return;
 
-  return;
   Hardware::solenoid.set_value(0);
+
+  while(Hardware::lift.getCurrPos() < .7)
+  {
+    Hardware::lift.hold_pos(1.0);
+    delay(50);
+  }
 
   while (1)
   {
+    control_lift();
+
     switch (auto_2_current)
     {
     case AUTO2_INIT:
 
       auto_2_current = AUTO2_DRIVE1;
       break;
+    // Drive forwards towards the first cube, and the stack of 4
     case AUTO2_DRIVE1:
 
-      if (Hardware::drive_system.drive_forward(34, drive_slow_speed) && Hardware::line_tracker.get_value() > 1000)
-        auto_2_current = AUTO2_TURN1;
-      else if(Hardware::line_tracker.get_value() < 1000 || Hardware::lift.getCurrPos() < 1)
-        Hardware::drive_system.drive(0,0);
+      // if (Hardware::drive_system.drive_forward(34, drive_slow_speed) && Hardware::line_tracker.get() > 1000)
+      //   auto_2_current = AUTO2_TURN1;
+      // else if (Hardware::line_tracker.get() < 1000 || Hardware::lift.getCurrPos() < .7)
+      //   Hardware::drive_system.drive(0, 0);
 
-      if (Hardware::line_tracker.get_value() < 1000 && pros::millis() - intake_timer > 1700)
+      if (Hardware::left_front.get_position() < 12)
       {
-        intake_timer = pros::millis();
-      }
-      else if (pros::millis() - intake_timer < 1400)
-      {
-        if (Hardware::lift.getCurrPos() > -.1)
-          Hardware::lift.lower(10000);
-        else
-          Hardware::lift.lower(0);
+        lift_val = .8;     // Set lift hieght for one cube
+        lower_time = 1700; // Set amount of time to allocate to grabbing the cube
+        Hardware::horiz_intake.contract_intake();
+        Hardware::horiz_intake.run_intake(true, false);
       }
       else
       {
-        if(Hardware::lift.getCurrPos() < 1.5)
-          Hardware::lift.raise(10000);
-        else
-          Hardware::lift.hold_pos(1.5);
+        lift_val = 1.8;    // Set lift height for four cubes
+        lower_time = 2400; // Set amount of time to allocate to grabbing the stack of 4
+        Hardware::horiz_intake.retract_intake();
+        Hardware::horiz_intake.run_intake(false, false);
       }
 
       break;
+    // Turn towwards the goal, and one lone cube to pick up
     case AUTO2_TURN1:
-      if(Hardware::drive_system.turn_degrees( color * 135, turn_speed))
+      if (Hardware::drive_system.turn_degrees(color * 135, turn_speed))
         auto_2_current = AUTO2_DRIVE2;
 
-      if(Hardware::lift.getCurrPos() > .1)
-        Hardware::lift.lower(3000);
-      else
-        Hardware::lift.hold_pos(.1);
+      lift_val = .8;
+      disable_pickup = true;
 
+      Hardware::horiz_intake.contract_intake();
       break;
     case AUTO2_DRIVE2:
-      if(Hardware::drive_system.drive_forward(35, drive_speed))
+      if (Hardware::drive_system.drive_forward(35, drive_slow_speed))
         auto_2_current = AUTO2_DROP1;
 
-      Hardware::lift.hold_pos(.1);
+      lower_time = 1700;
+      lift_val = .8;
+
+      if (Hardware::left_front.get_position() < 17)
+        Hardware::horiz_intake.run_intake(true, false);
+      else
+      {
+        Hardware::horiz_intake.retract_intake();
+        Hardware::horiz_intake.run_intake(false, false);
+      }
 
       break;
     case AUTO2_DROP1:
-      if(Hardware::lift.getCurrPos() < .05)
+      if (Hardware::lift.getCurrPos() < .05)
       {
-        Hardware::lift.lower(0);
         Hardware::solenoid.set_value(1);
-        
+
         pros::delay(500);
         auto_2_current = AUTO2_REVERSE_AWAY;
       }
-      
-      Hardware::lift.lower(3000);
+
+      disable_pickup = true;
+      Hardware::horiz_intake.retract_intake();
+
+      lift_val = 0;
+
       break;
     case AUTO2_REVERSE_AWAY:
 
-      if(Hardware::drive_system.drive_forward(-12, drive_speed))
+      if (Hardware::drive_system.drive_forward(-12, drive_speed))
+      {
+        Hardware::drive_system.stop();
+        auto_2_current = AUTO2_END;
+      }
+
+      break;
+    case AUTO2_TURN2:
+      Hardware::solenoid.set_value(0);
+      if (Hardware::drive_system.turn_degrees(color * 135, turn_speed))
+        auto_2_current = AUTO2_DRIVE_TO_TOWER;
+      break;
+    case AUTO2_DRIVE_TO_TOWER:
+      Hardware::horiz_intake.contract_intake();
+      lift_val = .8;
+      disable_pickup = false;
+
+      if (Hardware::drive_system.drive_forward(30, (Hardware::left_front.get_position() > 20) ? drive_slow_speed : drive_speed))
         auto_2_current = AUTO2_END;
 
       break;
     case AUTO2_END:
-      Hardware::drive_system.drive(0,0);
       Hardware::solenoid.set_value(0);
+      Hardware::drive_system.stop();
+
       break;
     }
     pros::delay(50);
@@ -193,9 +254,8 @@ void pick_up()
  */
 void autonomous()
 {
-  //auto_2();
-  //return;
-
+  auto_2();
+  return;
 
   pathfinder_test();
   return;

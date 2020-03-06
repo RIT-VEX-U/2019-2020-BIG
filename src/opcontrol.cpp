@@ -11,11 +11,11 @@ int drop_stack_state = 0;
 uint32_t drop_stack_timer = 0;
 
 //Encoder vals in rotations for different heights
-float lift_heights[] = {.5};
+float lift_heights[] = {.8};
 float current_height = 0;
 
-float MAX_LIFT = 2.96;
-float MIN_LIFT = -0.1;
+float MAX_LIFT = 3.0;
+float MIN_LIFT = 0.1;
 
 // boolean to see if the last action was pressing the b button OR using the lift with the joystick.
 // For setting the default state to either "down" or "just above cube"
@@ -33,6 +33,8 @@ bool last_action_b_button = false;
  */
 bool drop_stack()
 {
+  last_action_b_button = false;
+  Hardware::horiz_intake.retract_intake();
   switch (drop_stack_state)
   {
   // Step one: lower the lift
@@ -75,6 +77,7 @@ okapi::Timer timer;
 
 bool drop_stack_btn = false;
 bool test_turn = false;
+bool intake_toggle = false;
 
 SplinePath pather(&Hardware::drive_system, &Hardware::imu, &Hardware::left_middle, &Hardware::right_middle, &config::motion_profile);
 
@@ -107,20 +110,23 @@ SplinePath pather(&Hardware::drive_system, &Hardware::imu, &Hardware::left_middl
 void opcontrol()
 {
   /*
-  
   Waypoint list[] =
       {
           {0, 0, d2r(0)},
-          {-12, 24, d2r(0)}};
-  while (!pather.run_path(list, 2))
+          {24, 0, d2r(45)},
+          {24, 24, d2r(90)},
+          {24, 48, d2r(45)},
+          {48, 48, d2r(0)}
+      };
+
+  while (!pather.run_path(list, 5))
   {
     delay(10);
   }
 
   delay(1000);
   return;
-
-  */
+*/
   logging::clearLogFile();
 
   int x = 0;
@@ -128,6 +134,9 @@ void opcontrol()
   char const *position_format = "pos: %f";
   char position[100];
   Hardware::master.clear();
+
+  Hardware::left_intake.set_reversed(true);
+  Hardware::right_intake.set_reversed(true);
 
   /*while(Hardware::imu.is_calibrating()){
     sprintf(position, position_format, timer.millis());
@@ -169,7 +178,7 @@ void opcontrol()
 
     */
 
-    if (Hardware::master.get_digital_new_press(DIGITAL_A))
+    if (Hardware::partner.get_digital_new_press(DIGITAL_A))
     {
       drop_stack_state = 0;
       drop_stack_btn = true;
@@ -177,11 +186,11 @@ void opcontrol()
 
     // Stop the "drop the stack" function if the lift is being moved manually
     if (drop_stack_btn)
-      if (drop_stack() || Hardware::master.get_digital(DIGITAL_R1) || Hardware::master.get_digital(DIGITAL_R2) || Hardware::master.get_digital(DIGITAL_L1))
+      if (drop_stack() || abs(Hardware::partner.get_analog(ANALOG_LEFT_Y)) > 50 || Hardware::partner.get_digital(DIGITAL_B))
         drop_stack_btn = false;
 
     // Open / Close the intake doors with one button press
-    if (Hardware::master.get_digital_new_press(DIGITAL_X))
+    if (Hardware::partner.get_digital_new_press(DIGITAL_X))
       if (Hardware::vert_intake.is_closed())
         Hardware::vert_intake.open();
       else
@@ -196,7 +205,7 @@ void opcontrol()
       //Hardware::horiz_intake.run_intake(Hardware::partner.get_digital(DIGITAL_L1) || Hardware::partner.get_digital(DIGITAL_L2),
       //                                  Hardware::partner.get_digital(DIGITAL_R1) || Hardware::partner.get_digital(DIGITAL_R2));
 
-      if (Hardware::master.get_digital(DIGITAL_L1))
+      if (Hardware::partner.get_digital(DIGITAL_B))
       {
         last_action_b_button = true;
         if (lift_pos > MIN_LIFT)
@@ -212,28 +221,38 @@ void opcontrol()
       }
 
       // Run the lift manually using the left analog stick
-      if (Hardware::master.get_digital(DIGITAL_R1) && lift_pos <= MAX_LIFT)
+      if (Hardware::partner.get_analog(ANALOG_LEFT_Y) > 50 && lift_pos <= MAX_LIFT)
       {
         last_action_b_button = false;
         Hardware::lift.raise(12000);
         current_height = lift_pos;
       }
-      else if (Hardware::master.get_digital(DIGITAL_R2) && lift_pos >= MIN_LIFT)
+      else if (Hardware::partner.get_analog(ANALOG_LEFT_Y) < -50 && lift_pos >= MIN_LIFT)
       {
         last_action_b_button = false;
         Hardware::lift.raise(-8000);
         current_height = lift_pos;
       }
       // If the B button or analog stick are not being used, hold the lift via PID
-      else if (!Hardware::master.get_digital(DIGITAL_L1) && !last_action_b_button && lift_pos <= MIN_LIFT)
+      else if (!Hardware::partner.get_digital(DIGITAL_B) && !last_action_b_button && lift_pos <= MIN_LIFT)
       {
         Hardware::lift.stop();
       }
-      else if (!Hardware::master.get_digital(DIGITAL_L1))
+      else if (!Hardware::partner.get_digital(DIGITAL_B))
       {
         Hardware::lift.hold_pos(current_height);
       }
     }
+    if (Hardware::partner.get_digital_new_press(DIGITAL_Y))
+      intake_toggle = !intake_toggle;
+
+    if (Hardware::partner.get_analog(ANALOG_LEFT_Y) < -50 || Hardware::lift.getCurrPos() < .3 || intake_toggle || Hardware::partner.get_digital(DIGITAL_Y) || drop_stack_btn)
+      Hardware::horiz_intake.retract_intake();
+    else if (Hardware::partner.get_analog(ANALOG_LEFT_Y) > -50)
+      Hardware::horiz_intake.contract_intake();
+
+    Hardware::horiz_intake.run_intake(Hardware::partner.get_digital(DIGITAL_R1) || Hardware::partner.get_digital(DIGITAL_R2),
+                                      Hardware::partner.get_digital(DIGITAL_L1) || Hardware::partner.get_digital(DIGITAL_L2));
 
     //okapi::QTime t = timer.millis();
     //sprintf(position, position_format, x, t);
@@ -242,7 +261,11 @@ void opcontrol()
     double left = .7 * Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
     double right = .7 * Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
 
-    Hardware::drive_system.drive(left, right);
+    if (Hardware::master.get_digital(DIGITAL_DOWN))
+      Hardware::drive_system.drive(-.2, -.2);
+    else
+      Hardware::drive_system.drive(left, right);
+
     //Log all motors
     //Hardware::drive_system.logDrive();
     //Hardware::lift.logLift();
