@@ -86,6 +86,9 @@ AUTO_2_STATE auto_2_current = AUTO2_INIT;
 
 void auto_2()
 {
+  Hardware::vert_intake.open();
+  delay(1000);
+  Hardware::vert_intake.close();
   // while(!Hardware::drive_system.drive_forward(-24, drive_speed)){pros::delay(50);}
   // while(!Hardware::drive_system.drive_forward(24, drive_speed)){pros::delay(50);}
   // Hardware::drive_system.drive(0,0);
