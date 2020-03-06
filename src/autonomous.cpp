@@ -14,6 +14,8 @@ bool done_picking_up = false;
 
 uint32_t pick_up_vert_intake_time = 0;
 
+// prosv5 upload --name BLUE --slot 1
+// prosv5 upload --name RED --slot 2
 const double color = BLUE;
 
 uint32_t back_up_timer = 0;
@@ -63,14 +65,14 @@ bool disable_pickup = false;
 void control_lift()
 {
   // If the line tracker sees something, stop the robot, lower the lift and raise it up based on a timer.
-  // if (Hardware::line_tracker.get() < 1000 && pros::millis() - intake_timer > lower_time)
-  // {
-  //   intake_timer = pros::millis();
-  // }
-  // else if (pros::millis() - intake_timer < (lower_time)-800)
-  // {
-  //   lift_val = 0;
-  // }
+  if (Hardware::line_tracker.get_value() < 1000 && pros::millis() - intake_timer > lower_time)
+  {
+    intake_timer = pros::millis();
+  }
+  else if (pros::millis() - intake_timer < (lower_time)-800)
+  {
+    lift_val = 0;
+  }
 
   if (Hardware::lift.getCurrPos() < lift_val)
     Hardware::lift.raise(12000);
@@ -110,10 +112,10 @@ void auto_2()
     // Drive forwards towards the first cube, and the stack of 4
     case AUTO2_DRIVE1:
 
-      // if (Hardware::drive_system.drive_forward(34, drive_slow_speed) && Hardware::line_tracker.get() > 1000)
-      //   auto_2_current = AUTO2_TURN1;
-      // else if (Hardware::line_tracker.get() < 1000 || Hardware::lift.getCurrPos() < .7)
-      //   Hardware::drive_system.drive(0, 0);
+      if (Hardware::drive_system.drive_forward(34, drive_slow_speed) && Hardware::line_tracker.get_value() > 1000)
+        auto_2_current = AUTO2_TURN1;
+      else if (Hardware::line_tracker.get_value() < 1000 || Hardware::lift.getCurrPos() < .7)
+        Hardware::drive_system.drive(0, 0);
 
       if (Hardware::left_front.get_position() < 12)
       {

@@ -40,7 +40,7 @@ pros::ADIDigitalOut Hardware::solenoid('H');
 pros::Imu Hardware::imu(13);
 
 ADIButton Hardware::limit_switch('B');
-// ADIAnalogIn Hardware::line_tracker('C');
+ADIAnalogIn Hardware::line_tracker('C');
 
 ADIButton Hardware::right_button('G');
 ADIButton Hardware::left_button('F');

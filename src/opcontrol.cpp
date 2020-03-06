@@ -78,6 +78,7 @@ okapi::Timer timer;
 bool drop_stack_btn = false;
 bool test_turn = false;
 bool intake_toggle = false;
+float drive_multiplier = .7;
 
 SplinePath pather(&Hardware::drive_system, &Hardware::imu, &Hardware::left_middle, &Hardware::right_middle, &config::motion_profile);
 
@@ -109,6 +110,7 @@ SplinePath pather(&Hardware::drive_system, &Hardware::imu, &Hardware::left_middl
  */
 void opcontrol()
 {
+
   /*
   Waypoint list[] =
       {
@@ -258,8 +260,11 @@ void opcontrol()
     //sprintf(position, position_format, x, t);
     //Hardware::partner.print(2, 1, position);
 
-    double left = .7 * Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
-    double right = .7 * Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
+    if(Hardware::master.get_digital_new_press(DIGITAL_X))
+      drive_multiplier = (drive_multiplier > .5) ? .2 : .7;
+
+    double left = drive_multiplier * Hardware::master.get_analog(ANALOG_LEFT_Y) / 127.0;
+    double right = drive_multiplier * Hardware::master.get_analog(ANALOG_RIGHT_Y) / 127.0;
 
     if (Hardware::master.get_digital(DIGITAL_DOWN))
       Hardware::drive_system.drive(-.2, -.2);
