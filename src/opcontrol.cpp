@@ -5,7 +5,7 @@
 #include "config.h"
 #include "subsystems/rgb_controller.hpp"
 
-RGBController controller(RGBController::rgb_t::Off, 'A', 'B', 'C');
+//RGBController controller(RGBController::rgb_t::Off, 'A', 'B', 'C');
 
 int drop_stack_state = 0;
 uint32_t drop_stack_timer = 0;
