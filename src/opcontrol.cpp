@@ -147,6 +147,7 @@ void opcontrol()
 
   while (true)
   {
+    lcd::print(2, "Line Tracker: %d", Hardware::line_tracker.get_value());
     /*
     pros::lcd::print(0, "Gyro: %f", Hardware::imu.get_yaw());
 
